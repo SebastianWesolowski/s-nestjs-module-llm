@@ -121,35 +121,35 @@ jobs:
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🔍 TypeScript type checking
-        if: ${{ inputs.typescript_check }}
+        if: inputs.typescript_check == true
         run: yarn lint:typescript:check
 
       - name: 🔍 ESLint
-        if: ${{ inputs.eslint_check && !inputs.fix_issues }}
+        if: inputs.eslint_check == true && inputs.fix_issues != true
         run: yarn lint:eslint:check
 
       - name: 🔧 ESLint (with fixes)
-        if: ${{ inputs.eslint_check && inputs.fix_issues }}
+        if: inputs.eslint_check == true && inputs.fix_issues == true
         run: yarn lint:eslint:fix
 
       - name: 🔍 Prettier
-        if: ${{ inputs.prettier_check && !inputs.fix_issues }}
+        if: inputs.prettier_check == true && inputs.fix_issues != true
         run: yarn lint:prettier:check
 
       - name: 🔧 Prettier (with fixes)
-        if: ${{ inputs.prettier_check && inputs.fix_issues }}
+        if: inputs.prettier_check == true && inputs.fix_issues == true
         run: yarn lint:prettier:fix
 
       - name: 🔍 Stylelint
-        if: ${{ inputs.stylelint_check && !inputs.fix_issues }}
+        if: inputs.stylelint_check == true && inputs.fix_issues != true
         run: yarn lint:style:check
 
       - name: 🔧 Stylelint (with fixes)
-        if: ${{ inputs.stylelint_check && inputs.fix_issues }}
+        if: inputs.stylelint_check == true && inputs.fix_issues == true
         run: yarn lint:style:fix
 
       - name: 📊 Upload lint results
-        if: ${{ failure() || inputs.upload_artifacts }}
+        if: failure() || inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
           name: lint-results

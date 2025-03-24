@@ -144,7 +144,7 @@ jobs:
         run: yarn playwright:install
 
       - name: 🧪 Run unit tests
-        if: ${{ inputs.unit_tests }}
+        if: inputs.unit_tests == true
         run: yarn test:unit
         env:
           CI: true
@@ -155,21 +155,21 @@ jobs:
         run: yarn storybook:build
 
       - name: 🔥 Run smoke tests
-        if: ${{ inputs.smoke_tests }} && ${{ inputs.storybook_build }}
+        if: inputs.smoke_tests == true && inputs.storybook_build == true
         run: |
           yarn test:smoke:ci
         env:
           FORCE_COLOR: 1
 
       - name: 🤖 Run E2E tests
-        if: ${{ inputs.e2e_tests }}
+        if: inputs.e2e_tests == true
         run: yarn test:e2e
         env:
           PLAYWRIGHT_BROWSER: ${{ matrix.browser || 'chromium' }}
           FORCE_COLOR: 1
 
       - name: 📊 Upload test reports
-        if: ${{ failure() || inputs.upload_artifacts }}
+        if: failure() || inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.browser || 'chromium' }}

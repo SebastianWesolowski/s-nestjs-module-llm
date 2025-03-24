@@ -104,10 +104,10 @@ jobs:
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🏗️ Build application
-        run: ${{ inputs.production_build && 'yarn build:prod' || 'yarn build' }}
+        run: ${{ inputs.production_build == true && 'yarn build:prod' || 'yarn build' }}
 
       - name: 📊 Upload build artifacts
-        if: ${{ failure() || inputs.upload_artifacts }}
+        if: failure() || inputs.upload_artifacts == true
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
