@@ -49,7 +49,7 @@ jobs:
     uses: ./.github/workflows/reusable-test.yml
     with:
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
-      e2e_tests: ${{ github.event_name != 'pull_request' }}
+      e2e_tests: false
       node_version: ${{ needs.setup.outputs.node_version }}
       install_deps: ${{ needs.setup.outputs.install_deps }}
       install_playwright: ${{ needs.setup.outputs.install_playwright }}

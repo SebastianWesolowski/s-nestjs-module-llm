@@ -140,7 +140,7 @@ jobs:
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🎭 Install Playwright (if needed)
-        if: inputs.install_playwright == 'true' && ${{ inputs.e2e_tests || inputs.smoke_tests }}
+        if: inputs.install_playwright == 'true' && (inputs.e2e_tests == true || inputs.smoke_tests == true)
         run: yarn playwright:install
 
       - name: 🧪 Run unit tests
