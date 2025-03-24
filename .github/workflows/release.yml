@@ -1,9 +1,16 @@
 # Reusable workflow for releases; to eject, you can replace this file with
 # https://github.com/SebastianWesolowski/SebastianWesolowski/blob/main/.github/workflows/release.yml
-name: Release
+name: Release npm package
 
 on:
   push:
+    branches:
+      - main
+      - master
+      - develop
+      - 'feature/*'
+      - dev
+  pull_request:
     branches:
       - main
       - master
@@ -12,36 +19,97 @@ on:
       dry_run:
         description: 'Perform a dry run (no actual release)'
         type: boolean
-        default: false
+        default: true
         required: false
+      is_pre_release:
+        description: 'Force pre-release mode (beta from develop/feature)'
+        type: boolean
+        required: false
+        default: false
+      is_preprod:
+        description: 'Force pre-production mode (from PR to main/master)'
+        type: boolean
+        required: false
+        default: false
+      build_command:
+        description: 'Custom build command'
+        type: string
+        required: false
+        default: 'build:package'
 
 # Ensure we don't have multiple release workflows running
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # First run tests to ensure everything is working
-  test:
-    name: Verify Release
+  setup:
+    name: Setup
+    uses: ./.github/workflows/reusable-setup.yml
+    with:
+      node_version: '20.17.0'
+      setup_playwright: true
+      install_args: '--frozen-lockfile'
+
+  pre_release_checks:
+    name: Pre-release Checks
+    needs: setup
+    if: |
+      github.event.inputs.is_pre_release == 'true' ||
+      contains(github.ref, 'develop') ||
+      contains(github.ref, 'feature/') ||
+      contains(github.ref, 'dev')
+    uses: ./.github/workflows/reusable-lint.yml
+    with:
+      node_version: ${{ needs.setup.outputs.node_version }}
+      eslint_check: true
+      prettier_check: true
+      stylelint_check: true
+      typescript_check: true
+      fix_issues: false
+      upload_artifacts: true
+      install_deps: ${{ needs.setup.outputs.install_deps }}
+      cache_keys: ${{ needs.setup.outputs.cache_keys }}
+
+  pre_release_tests:
+    name: Pre-release Tests
+    needs: [setup, pre_release_checks]
+    if: |
+      github.event.inputs.is_pre_release == 'true' ||
+      contains(github.ref, 'develop') ||
+      contains(github.ref, 'feature/') ||
+      contains(github.ref, 'dev')
     uses: ./.github/workflows/reusable-test.yml
     with:
+      node_version: ${{ needs.setup.outputs.node_version }}
       unit_tests: true
-      e2e_tests: false
+      e2e_tests: true
       smoke_tests: true
-      upload_artifacts: false
+      storybook_build: true
+      install_deps: ${{ needs.setup.outputs.install_deps }}
+      install_playwright: ${{ needs.setup.outputs.install_playwright }}
+      upload_artifacts: true
+      cache_keys: ${{ needs.setup.outputs.cache_keys }}
 
-  # Then perform the release
   release:
     name: Release
-    needs: test
-    if: success()
+    needs: [setup, pre_release_checks, pre_release_tests]
+    if: |
+      success() &&
+      (
+        (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) ||
+        (needs.pre_release_checks.result == 'success' && needs.pre_release_tests.result == 'success')
+      )
     uses: ./.github/workflows/reusable-release.yml
     with:
-      dry_run: ${{ github.event.inputs.dry_run == 'true' }}
-      pre_release: false
+      dry_run: ${{ github.event.inputs.dry_run || 'false' }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
       release_branch: ${{ github.ref_name }}
-      build_command: 'build:release'
+      build_command: ${{ github.event.inputs.build_command || 'build:release' }}
+      node_version: ${{ needs.setup.outputs.node_version }}
+      install_deps: ${{ needs.setup.outputs.install_deps }}
+      cache_keys: ${{ needs.setup.outputs.cache_keys }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -8,8 +8,13 @@ on:
         required: false
         type: boolean
         default: false
-      pre_release:
-        description: 'Whether this is a pre-release'
+      is_pre_release:
+        description: 'Whether this is a pre-release (beta from develop/feature)'
+        required: false
+        type: boolean
+        default: false
+      is_preprod:
+        description: 'Whether this is a pre-production release (from PR)'
         required: false
         type: boolean
         default: false
@@ -28,6 +33,18 @@ on:
         required: false
         type: string
         default: '--frozen-lockfile'
+      node_version:
+        description: 'Node.js version from setup'
+        required: true
+        type: string
+      install_deps:
+        description: 'Whether to install dependencies'
+        required: true
+        type: string
+      cache_keys:
+        description: 'Cache keys configuration'
+        required: true
+        type: string
     secrets:
       GH_TOKEN:
         description: 'GitHub token with repo scope'
@@ -50,6 +67,26 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
+      - name: 🔍 inputs
+        run: |
+          echo "Debugowanie inputów workflow:"
+          echo "dry_run: ${{ inputs.dry_run }}"
+          echo "is_pre_release: ${{ inputs.is_pre_release }}"
+          echo "is_preprod: ${{ inputs.is_preprod }}"
+          echo "release_branch: ${{ inputs.release_branch }}"
+          echo "build_command: ${{ inputs.build_command }}"
+          echo "install_args: ${{ inputs.install_args }}"
+          echo "node_version: ${{ inputs.node_version }}"
+          echo "install_deps: ${{ inputs.install_deps }}"
+
+          echo "Parsed cache keys:"
+          echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
+          echo "build_key: ${{ fromJSON(inputs.cache_keys).build_key }}"
+
+          echo "Secrets status:"
+          echo "GH_TOKEN: ${{ secrets.GH_TOKEN != '' }}"
+          echo "NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}"
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
@@ -60,35 +97,54 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.17.0'
+          node-version: ${{ inputs.node_version }}
           cache: 'yarn'
 
+      - name: ⚡ Cache dependencies
+        if: inputs.install_deps != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/node_modules/
+          key: ${{ fromJSON(inputs.cache_keys).deps_key }}
+          restore-keys: |
+            ${{ fromJSON(inputs.cache_keys).deps_key }}
+
       - name: 📦 Install dependencies
+        if: inputs.install_deps == 'true'
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }}
 
       - name: 🔍 Check next release version
         id: next-version
-        if: inputs.pre_release == true || inputs.dry_run == true
+        if: inputs.is_pre_release == true || inputs.dry_run == true
         run: |
           NEXT_VERSION=$(npx semantic-release --dry-run | grep "next release version is" -i | sed 's/.*is //')
           echo "Next version will be: $NEXT_VERSION"
           echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: 🗑️ Clean specific tag if exists
-        if: inputs.pre_release == true && steps.next-version.outputs.version != ''
+        if: inputs.is_pre_release == true && steps.next-version.outputs.version != ''
         run: |
           echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
           git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
-          git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
+
+      # git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
 
       - name: 🏗️ Build project
         run: yarn ${{ inputs.build_command }}
 
       - name: 🚀 Release to NPM and GitHub
         if: inputs.dry_run != true && secrets.NPM_TOKEN != ''
-        run: npx semantic-release
+        run: |
+          if ${{ inputs.is_preprod }}; then
+            npx semantic-release --prerelease preprod
+          elif ${{ inputs.is_pre_release }}; then
+            npx semantic-release --prerelease beta
+          else
+            npx semantic-release
+          fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -96,7 +152,14 @@ jobs:
 
       - name: 🚀 Release to GitHub only
         if: inputs.dry_run != true && secrets.NPM_TOKEN == ''
-        run: npx semantic-release
+        run: |
+          if ${{ inputs.is_preprod }}; then
+            npx semantic-release --prerelease preprod
+          elif ${{ inputs.is_pre_release }}; then
+            npx semantic-release --prerelease beta
+          else
+            npx semantic-release
+          fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -104,12 +167,43 @@ jobs:
       - name: 📋 Post Release Status
         if: always()
         run: |
+          # Określ typ release'u
+          RELEASE_TYPE="Production"
+          if [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+            RELEASE_TYPE="Pre-production (preprod)"
+          elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+            RELEASE_TYPE="Pre-release (beta)"
+          fi
+
+          # Określ tryb (dry-run lub rzeczywisty)
+          MODE="${{ inputs.dry_run && '(DRY RUN)' || '(ACTUAL RELEASE)' }}"
+
+          echo "### Release Status Summary 📊" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** ${RELEASE_TYPE}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Mode:** ${MODE}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ inputs.release_branch }}" >> $GITHUB_STEP_SUMMARY
+
           if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Release ${{ inputs.dry_run && '(dry run) ' || '' }}completed successfully"
-            if [ "${{ steps.next-version.outputs.version }}" != "" ]; then
-              echo "Version: v${{ steps.next-version.outputs.version }}"
+            echo "- **Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+            if [[ "${{ steps.next-version.outputs.version }}" != "" ]]; then
+              echo "- **Version:** v${{ steps.next-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+            fi
+
+            # Dodatkowe informacje o typie wydania
+            if [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+              echo "- **Tag suffix:** preprod" >> $GITHUB_STEP_SUMMARY
+            elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+              echo "- **Tag suffix:** beta" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "❌ Release failed"
-            echo "Please check the logs for more information"
+            echo "- **Status:** ❌ Failed" >> $GITHUB_STEP_SUMMARY
+            echo "- **Details:** Please check the logs for more information" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Dodaj informacje o NPM
+          if [[ "${{ secrets.NPM_TOKEN }}" != "" ]]; then
+            echo "- **Publishing to:** GitHub + NPM" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Publishing to:** GitHub only" >> $GITHUB_STEP_SUMMARY
           fi
