@@ -17,6 +17,17 @@ on:
         description: 'Node.js version to use'
         required: true
         type: string
+      release_type:
+        description: 'Typ wydania paczki'
+        required: false
+        type: choice
+        default: 'auto'
+        options:
+          - 'auto' # Automatyczne wykrywanie na podstawie gałęzi
+          - 'production' # Wydanie produkcyjne (X.Y.Z)
+          - 'preprod' # Wydanie przed-produkcyjne (X.Y.Z-rc.N)
+          - 'prerelease' # Wydanie przed-wydaniowe (X.Y.Z-beta.N)
+          - 'feature' # Wydanie funkcjonalności (X.Y.Z-feat-nazwa.N)
     outputs:
       node_version:
         description: 'The Node.js version being used'
@@ -33,6 +44,9 @@ on:
       setup_summary:
         description: 'Summary of setup information'
         value: ${{ jobs.setup.outputs.setup_summary }}
+      release_type_detected:
+        description: 'Detected release type'
+        value: ${{ jobs.setup.outputs.release_type_detected }}
 
 jobs:
   setup:
@@ -44,6 +58,7 @@ jobs:
       install_playwright: ${{ steps.check-installations.outputs.install_playwright }}
       install_deps: ${{ steps.check-installations.outputs.install_deps }}
       setup_summary: ${{ steps.summary.outputs.setup_summary }}
+      release_type_detected: ${{ steps.detect-release-type.outputs.release_type_detected }}
 
     steps:
       - name: 📝 Checkout
@@ -156,6 +171,32 @@ jobs:
           fi
           echo "install_deps=${INSTALL_DEPS}" >> $GITHUB_OUTPUT
 
+      - name: 🔍 Wykrywanie typu wydania
+        id: detect-release-type
+        run: |
+          RELEASE_TYPE="${{ inputs.release_type }}"
+          DETECTED_TYPE="unknown"
+
+          # Jeśli wybrano automatyczne wykrywanie
+          if [[ "$RELEASE_TYPE" == "auto" ]]; then
+            if [[ "${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}" == "true" ]]; then
+              DETECTED_TYPE="production"
+            elif [[ "${{ github.event_name }}" == "pull_request" && ("${{ github.base_ref }}" == "main" || "${{ github.base_ref }}" == "master") ]]; then
+              DETECTED_TYPE="preprod"
+            elif [[ "${{ contains(github.ref, 'feature/') }}" == "true" ]]; then
+              DETECTED_TYPE="feature"
+            elif [[ "${{ contains(github.ref, 'develop') || contains(github.ref, 'dev') }}" == "true" ]]; then
+              DETECTED_TYPE="prerelease"
+            else
+              DETECTED_TYPE="prerelease" # Domyślnie prerelease jeśli nie można określić
+            fi
+          else
+            DETECTED_TYPE="$RELEASE_TYPE"
+          fi
+
+          echo "release_type_detected=$DETECTED_TYPE" >> $GITHUB_OUTPUT
+          echo "RELEASE_TYPE_DETECTED=$DETECTED_TYPE" >> $GITHUB_ENV
+
       - name: 📝 Summary
         id: summary
         run: |
@@ -165,6 +206,7 @@ jobs:
             --arg node "$NODE_VERSION" \
             --arg deps "${{ steps.check-installations.outputs.install_deps }}" \
             --arg playwright "${{ steps.check-installations.outputs.install_playwright }}" \
+            --arg release_type "$RELEASE_TYPE_DETECTED" \
             --argjson cache '${{ steps.cache-deps.outputs.cache_keys }}' \
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             '{
@@ -173,7 +215,8 @@ jobs:
                 details: [
                   "🔧 Wersja Node.js: " + $node,
                   "📦 Instalacja zależności: " + $deps,
-                  "🎭 Instalacja Playwright: " + $playwright
+                  "🎭 Instalacja Playwright: " + $playwright,
+                  "📌 Typ wydania: " + $release_type
                 ],
                 cache_section: {
                   title: "#### 🔑 Klucze cache:",
@@ -184,6 +227,7 @@ jobs:
                 node_version: $node,
                 install_deps: ($deps == "true"),
                 install_playwright: ($playwright == "true"),
+                release_type: $release_type,
                 cache_keys: $cache,
                 timestamp: $time
               }

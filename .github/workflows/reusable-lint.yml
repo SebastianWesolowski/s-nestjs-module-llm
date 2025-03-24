@@ -52,22 +52,12 @@ on:
         required: false
         type: boolean
         default: true
-      # Nowe parametry dla typów wydania
-      is_pre_release:
-        description: 'Whether this is a pre-release (beta from develop/feature)'
+      # Parametr typu wydania
+      release_type_detected:
+        description: 'Type of release detected (production, preprod, prerelease, feature)'
         required: false
-        type: boolean
-        default: false
-      is_preprod:
-        description: 'Whether this is a pre-production release (from PR)'
-        required: false
-        type: boolean
-        default: false
-      is_production:
-        description: 'Whether this is a production release (from main/master)'
-        required: false
-        type: boolean
-        default: false
+        type: string
+        default: 'prerelease'
     outputs:
       lint_summary:
         description: 'Summary of lint results'
@@ -96,9 +86,7 @@ jobs:
           echo "stylelint_check: ${{ inputs.stylelint_check }}"
           echo "typescript_check: ${{ inputs.typescript_check }}"
           echo "upload_artifacts: ${{ inputs.upload_artifacts }}"
-          echo "is_pre_release: ${{ inputs.is_pre_release }}"
-          echo "is_preprod: ${{ inputs.is_preprod }}"
-          echo "is_production: ${{ inputs.is_production }}"
+          echo "release_type_detected: ${{ inputs.release_type_detected }}"
 
           echo "Parsed cache keys:"
           echo "lint_key: ${{ fromJSON(inputs.cache_keys).lint_key }}"
@@ -108,23 +96,33 @@ jobs:
           RUN_LINT="true"
           REASON=""
 
-          if [[ "${{ inputs.is_production }}" == "true" ]]; then
-            # Dla produkcyjnych releasów pomijamy linting
-            RUN_LINT="false"
-            REASON="Production release detected, skipping lint checks"
-          elif [[ "${{ inputs.is_preprod }}" == "true" ]]; then
-            # Dla pre-produkcyjnych releasów pomijamy linting
-            RUN_LINT="false"
-            REASON="Pre-production release detected, skipping lint checks"
-          elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
-            # Dla pre-release wykonujemy linting
-            RUN_LINT="true"
-            REASON="Pre-release detected, performing lint checks"
-          else
-            # W innych przypadkach wykonujemy linting
-            RUN_LINT="true"
-            REASON="Regular build, performing lint checks"
-          fi
+          case "${{ inputs.release_type_detected }}" in
+            "production")
+              # Dla produkcyjnych releasów pomijamy linting
+              RUN_LINT="false"
+              REASON="Production release detected, skipping lint checks"
+              ;;
+            "preprod")
+              # Dla pre-produkcyjnych releasów wykonujemy linting
+              RUN_LINT="true"
+              REASON="Pre-production release detected, performing lint checks"
+              ;;
+            "prerelease")
+              # Dla pre-release wykonujemy linting
+              RUN_LINT="true"
+              REASON="Pre-release detected, performing lint checks"
+              ;;
+            "feature")
+              # Dla feature branch wykonujemy linting
+              RUN_LINT="true"
+              REASON="Feature branch detected, performing lint checks"
+              ;;
+            *)
+              # W innych przypadkach wykonujemy linting
+              RUN_LINT="true"
+              REASON="Unknown release type, performing lint checks by default"
+              ;;
+          esac
 
           echo "run_lint=${RUN_LINT}" >> $GITHUB_OUTPUT
           echo "reason=${REASON}" >> $GITHUB_OUTPUT
@@ -237,6 +235,7 @@ jobs:
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             --arg run_lint "${{ steps.check_inputs.outputs.run_lint }}" \
             --arg reason "${{ steps.check_inputs.outputs.reason }}" \
+            --arg release_type "${{ inputs.release_type_detected }}" \
             --argjson checks "$(printf '%s\n' "${DETAILS[@]}" | jq -R . | jq -s .)" \
             '{
               markdown: {
@@ -252,9 +251,7 @@ jobs:
                 node_version: $node,
                 timestamp: $time,
                 run_lint: ($run_lint == "true"),
-                is_pre_release: ${{ inputs.is_pre_release }},
-                is_preprod: ${{ inputs.is_preprod }},
-                is_production: ${{ inputs.is_production }},
+                release_type: $release_type,
                 reason: $reason
               }
             }')
@@ -275,6 +272,9 @@ jobs:
               echo ""
               echo "$lint_summary" | jq -r '.markdown.run_status'
             fi
+
+            echo ""
+            echo "**Release type:** ${{ inputs.release_type_detected }}"
           } >> $GITHUB_STEP_SUMMARY
 
           # Export danych do outputs
