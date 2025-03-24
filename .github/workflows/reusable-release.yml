@@ -79,7 +79,7 @@ jobs:
       # FORCE_COLOR: 1
       NODE_ENV: production
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      # GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
@@ -211,7 +211,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           ref: ${{ inputs.release_branch }}
         if: steps.check_inputs.outputs.do_release == 'true'
 
@@ -274,10 +274,6 @@ jobs:
             echo "Using production release type"
             npx semantic-release
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 📋 Post Release Status
         if: always()

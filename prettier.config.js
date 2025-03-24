@@ -1,4 +1,4 @@
-const sPrettier = require('s-nestjs-modules-llm');
+const sPrettier = require('s-prettier');
 
 module.exports = {
   ...sPrettier,
