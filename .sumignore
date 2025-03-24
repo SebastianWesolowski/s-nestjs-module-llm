@@ -1,0 +1,8 @@
+src/
+.github/FUNDING.yml
+package.json
+README.md
+./docs/HowToAutoDeploy.md
+LICENSE
+.nvmrc
+tools/customize/customize.config.ts

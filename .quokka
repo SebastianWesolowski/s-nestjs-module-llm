@@ -1,0 +1,15 @@
+{
+  "babel": false,
+  "typescript": true,
+  "runMode": 1,
+  "env": {
+    "params": {
+      "env": "development",
+      "SDEBUG": "true",
+      "STYPE": "init"
+    }
+  },
+  "esm": {
+    "enabled": true
+  }
+}
