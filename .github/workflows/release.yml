@@ -103,16 +103,8 @@ jobs:
     uses: ./.github/workflows/reusable-release.yml
     with:
       dry_run: ${{ github.event.inputs.dry_run }}
-      is_pre_release: ${{
-        github.event.inputs.is_pre_release ||
-        contains(github.ref, 'develop') ||
-        contains(github.ref, 'feature/') ||
-        contains(github.ref, 'dev')
-      }}
-      is_preprod: ${{
-        github.event.inputs.is_preprod ||
-        (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master'))
-      }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
       release_branch: ${{ github.ref_name }}
       build_command: ${{ github.event.inputs.build_command || 'build:package' }}
       node_version: ${{ needs.setup.outputs.node_version }}
