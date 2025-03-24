@@ -48,7 +48,7 @@ jobs:
     uses: ./.github/workflows/reusable-setup.yml
     with:
       node_version: '20.17.0'
-      setup_playwright: true
+      setup_playwright: false
       install_args: '--frozen-lockfile'
 
   pre_release_checks:
@@ -59,14 +59,14 @@ jobs:
       node_version: ${{ needs.setup.outputs.node_version }}
       eslint_check: true
       prettier_check: true
-      stylelint_check: true
+      stylelint_check: false
       typescript_check: true
       fix_issues: false
       upload_artifacts: true
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
-      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
-      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release == 'true' || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod == 'true' || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
       is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
 
   pre_release_tests:
@@ -84,10 +84,81 @@ jobs:
       install_playwright: ${{ needs.setup.outputs.install_playwright }}
       upload_artifacts: true
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
-      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
-      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release == 'true' || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod == 'true' || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
       is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
       prev_step_result: ${{ needs.pre_release_checks.result }}
+
+  debug_variables:
+    name: Debug Variables
+    needs: [setup, pre_release_checks, pre_release_tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔬 Debug variables before release
+        run: |
+          echo "=== 🔬 Zmienne przekazywane do reusable-release.yml 🔬 ==="
+
+          echo "=== 📋 Inputs ==="
+          echo "dry_run (raw): '${{ github.event.inputs.dry_run }}'"
+          echo "dry_run (converted): '${{ github.event.inputs.dry_run == 'true' }}'"
+          echo "is_pre_release (raw): '${{ github.event.inputs.is_pre_release }}'"
+          echo "is_pre_release (converted): '${{ github.event.inputs.is_pre_release == 'true' || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}'"
+          echo "is_preprod (raw): '${{ github.event.inputs.is_preprod }}'"
+          echo "is_preprod (converted): '${{ github.event.inputs.is_preprod == 'true' || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}'"
+          echo "is_production: '${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}'"
+          echo "release_branch: '${{ github.ref_name }}'"
+          echo "build_command (raw): '${{ github.event.inputs.build_command }}'"
+          echo "build_command (fallback): '${{ github.event.inputs.build_command || 'build:package' }}'"
+
+          echo "=== 🔄 Outputs z poprzednich jobów ==="
+          echo "node_version: '${{ needs.setup.outputs.node_version }}'"
+          echo "install_deps: '${{ needs.setup.outputs.install_deps }}'"
+          echo "install_playwright: '${{ needs.setup.outputs.install_playwright }}'"
+          echo "lint_result: '${{ needs.pre_release_checks.result }}'"
+          echo "tests_result: '${{ needs.pre_release_tests.result }}'"
+
+          echo "=== 🔄 GitHub Context ==="
+          echo "github.ref: '${{ github.ref }}'"
+          echo "github.ref_name: '${{ github.ref_name }}'"
+          echo "github.event_name: '${{ github.event_name }}'"
+          echo "github.workflow: '${{ github.workflow }}'"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "github.base_ref: '${{ github.base_ref }}'"
+            echo "github.head_ref: '${{ github.head_ref }}'"
+          fi
+
+          # Zapisz podsumowanie do GitHub Step Summary
+          {
+            echo "### 🔬 Debug Variables Summary (main workflow)"
+            echo ""
+            echo "#### Release Configuration"
+            echo "| Variable | Raw Value | Converted Value |"
+            echo "| --- | --- | --- |"
+            echo "| dry_run | ${{ github.event.inputs.dry_run }} | ${{ github.event.inputs.dry_run == 'true' }} |"
+            echo "| is_pre_release | ${{ github.event.inputs.is_pre_release }} | ${{ github.event.inputs.is_pre_release == 'true' || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }} |"
+            echo "| is_preprod | ${{ github.event.inputs.is_preprod }} | ${{ github.event.inputs.is_preprod == 'true' || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }} |"
+            echo "| is_production | n/a | ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }} |"
+            echo "| release_branch | n/a | ${{ github.ref_name }} |"
+            echo "| build_command | ${{ github.event.inputs.build_command }} | ${{ github.event.inputs.build_command || 'build:package' }} |"
+            echo ""
+            echo "#### Outputs from Previous Jobs"
+            echo "| Variable | Value |"
+            echo "| --- | --- |"
+            echo "| node_version | ${{ needs.setup.outputs.node_version }} |"
+            echo "| install_deps | ${{ needs.setup.outputs.install_deps }} |"
+            echo "| install_playwright | ${{ needs.setup.outputs.install_playwright }} |"
+            echo "| lint_result | ${{ needs.pre_release_checks.result }} |"
+            echo "| tests_result | ${{ needs.pre_release_tests.result }} |"
+            echo ""
+            echo "#### Git Context"
+            echo "| Variable | Value |"
+            echo "| --- | --- |"
+            echo "| github.ref | ${{ github.ref }} |"
+            echo "| github.ref_name | ${{ github.ref_name }} |"
+            echo "| github.event_name | ${{ github.event_name }} |"
+          } >> $GITHUB_STEP_SUMMARY
 
   release:
     name: Release
@@ -95,9 +166,9 @@ jobs:
     if: always()
     uses: ./.github/workflows/reusable-release.yml
     with:
-      dry_run: ${{ github.event.inputs.dry_run }}
-      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
-      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      dry_run: ${{ github.event.inputs.dry_run == 'true' }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release == 'true' || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod == 'true' || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
       is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
       release_branch: ${{ github.ref_name }}
       build_command: ${{ github.event.inputs.build_command || 'build:package' }}

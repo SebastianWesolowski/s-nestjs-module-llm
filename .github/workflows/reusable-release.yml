@@ -137,6 +137,75 @@ jobs:
           echo "do_release=${DO_RELEASE}" >> $GITHUB_OUTPUT
           echo "reason=${REASON}" >> $GITHUB_OUTPUT
 
+      - name: 🔬 Debug all variables
+        run: |
+          echo "=== 🔬 Szczegółowe debugowanie wszystkich zmiennych 🔬 ==="
+
+          echo "=== 📋 Inputs dokładnie ==="
+          echo "dry_run: '${{ inputs.dry_run }}' (type: $([ "${{ inputs.dry_run }}" == "true" ] && echo "boolean:true" || echo "boolean:false"))"
+          echo "is_pre_release: '${{ inputs.is_pre_release }}' (type: $([ "${{ inputs.is_pre_release }}" == "true" ] && echo "boolean:true" || echo "boolean:false"))"
+          echo "is_preprod: '${{ inputs.is_preprod }}' (type: $([ "${{ inputs.is_preprod }}" == "true" ] && echo "boolean:true" || echo "boolean:false"))"
+          echo "is_production: '${{ inputs.is_production }}' (type: $([ "${{ inputs.is_production }}" == "true" ] && echo "boolean:true" || echo "boolean:false"))"
+
+          echo "=== 🔄 GitHub Context ==="
+          echo "github.ref: '${{ github.ref }}'"
+          echo "github.ref_name: '${{ github.ref_name }}'"
+          echo "github.event_name: '${{ github.event_name }}'"
+          echo "github.workflow: '${{ github.workflow }}'"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "github.base_ref: '${{ github.base_ref }}'"
+            echo "github.head_ref: '${{ github.head_ref }}'"
+          fi
+
+          echo "=== 🧪 Tests & Lint Results ==="
+          echo "lint_result: '${{ inputs.lint_result }}' (success: $([ "${{ inputs.lint_result }}" == "success" ] && echo "true" || echo "false"))"
+          echo "tests_result: '${{ inputs.tests_result }}' (success: $([ "${{ inputs.tests_result }}" == "success" ] && echo "true" || echo "false"))"
+
+          echo "=== 🏷️ Calculated Variables ==="
+          echo "DO_RELEASE: '${{ steps.check_inputs.outputs.do_release }}'"
+          echo "REASON: '${{ steps.check_inputs.outputs.reason }}'"
+
+          echo "=== 💾 Cache Keys JSON ==="
+          echo "${{ inputs.cache_keys }}"
+
+          echo "=== 🔍 Runner Environment ==="
+          echo "RUNNER_OS: $RUNNER_OS"
+          echo "RUNNER_ARCH: $RUNNER_ARCH"
+          echo "RUNNER_NAME: $RUNNER_NAME"
+
+          echo "=== 📌 Additional Info ==="
+          echo "Node.js: $(node -v)"
+          echo "NPM: $(npm -v)"
+          echo "Yarn: $(yarn -v)"
+
+          # Zapisz podsumowanie do GitHub Step Summary
+          {
+            echo "### 🔬 Debug Variables Summary"
+            echo ""
+            echo "#### Release Configuration"
+            echo "| Variable | Value | Type |"
+            echo "| --- | --- | --- |"
+            echo "| dry_run | ${{ inputs.dry_run }} | boolean |"
+            echo "| is_pre_release | ${{ inputs.is_pre_release }} | boolean |"
+            echo "| is_preprod | ${{ inputs.is_preprod }} | boolean |"
+            echo "| is_production | ${{ inputs.is_production }} | boolean |"
+            echo ""
+            echo "#### Context Information"
+            echo "| Variable | Value |"
+            echo "| --- | --- |"
+            echo "| github.ref | ${{ github.ref }} |"
+            echo "| github.ref_name | ${{ github.ref_name }} |"
+            echo "| github.event_name | ${{ github.event_name }} |"
+            echo "| github.workflow | ${{ github.workflow }} |"
+            echo ""
+            echo "#### Decision Logic"
+            echo "| Variable | Value |"
+            echo "| --- | --- |"
+            echo "| DO_RELEASE | ${{ steps.check_inputs.outputs.do_release }} |"
+            echo "| REASON | ${{ steps.check_inputs.outputs.reason }} |"
+          } >> $GITHUB_STEP_SUMMARY
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
