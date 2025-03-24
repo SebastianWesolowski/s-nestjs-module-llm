@@ -27,7 +27,7 @@ on:
         description: 'Command to build the project before release'
         required: false
         type: string
-        default: 'build:release'
+        default: 'build:package'
       install_args:
         description: 'Arguments for yarn install command'
         required: false
@@ -94,7 +94,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           ref: ${{ inputs.release_branch }}
 
-      - name: 🟢 Setup Node.js
+      - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
@@ -118,19 +118,17 @@ jobs:
 
       - name: 🔍 Check next release version
         id: next-version
-        if: inputs.is_pre_release == true || inputs.dry_run == true
+        if: inputs.is_pre_release || inputs.dry_run
         run: |
           NEXT_VERSION=$(npx semantic-release --dry-run | grep "next release version is" -i | sed 's/.*is //')
           echo "Next version will be: $NEXT_VERSION"
           echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: 🗑️ Clean specific tag if exists
-        if: inputs.is_pre_release == true && steps.next-version.outputs.version != ''
+        if: inputs.is_pre_release && steps.next-version.outputs.version != ''
         run: |
           echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
           git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
-
-      # git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
 
       - name: 🏗️ Build project
         run: yarn ${{ inputs.build_command }}
@@ -141,22 +139,20 @@ jobs:
           # Sprawdź dostępność NPM_TOKEN
           if [[ -n "$NPM_TOKEN" ]]; then
             echo "Publishing to NPM and GitHub..."
-            if ${{ inputs.is_preprod }}; then
-              npx semantic-release --prerelease preprod
-            elif ${{ inputs.is_pre_release }}; then
-              npx semantic-release --prerelease beta
-            else
-              npx semantic-release
-            fi
           else
             echo "Publishing to GitHub only..."
-            if ${{ inputs.is_preprod }}; then
-              npx semantic-release --prerelease preprod
-            elif ${{ inputs.is_pre_release }}; then
-              npx semantic-release --prerelease beta
-            else
-              npx semantic-release
-            fi
+          fi
+
+          # Wybierz typ release'u
+          if [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+            echo "Using pre-production release type (preprod)"
+            npx semantic-release --prerelease preprod
+          elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+            echo "Using pre-release type (beta)"
+            npx semantic-release --prerelease beta
+          else
+            echo "Using production release type"
+            npx semantic-release
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -182,6 +178,8 @@ jobs:
           echo "- **Type:** ${RELEASE_TYPE}" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${MODE}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ inputs.release_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build command:** ${{ inputs.build_command }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node version:** ${{ inputs.node_version }}" >> $GITHUB_STEP_SUMMARY
 
           if [ "${{ job.status }}" == "success" ]; then
             echo "- **Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
