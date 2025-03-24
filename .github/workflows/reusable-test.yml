@@ -57,6 +57,28 @@ on:
         required: false
         type: boolean
         default: true
+      # Nowe parametry dla typów wydania
+      is_pre_release:
+        description: 'Whether this is a pre-release (beta from develop/feature)'
+        required: false
+        type: boolean
+        default: false
+      is_preprod:
+        description: 'Whether this is a pre-production release (from PR)'
+        required: false
+        type: boolean
+        default: false
+      is_production:
+        description: 'Whether this is a production release (from main/master)'
+        required: false
+        type: boolean
+        default: false
+      # Informacja o wyniku poprzedniego kroku
+      prev_step_result:
+        description: 'Result of the previous step'
+        required: false
+        type: string
+        default: 'success'
     outputs:
       test_summary:
         description: 'Summary of test results'
@@ -75,6 +97,7 @@ jobs:
 
     steps:
       - name: 🔍 inputs
+        id: check_inputs
         run: |
           echo "Debugowanie inputów workflow:"
           echo "cache_keys: ${{ inputs.cache_keys }}"
@@ -88,15 +111,50 @@ jobs:
           echo "test_matrix: ${{ inputs.test_matrix }}"
           echo "unit_tests: ${{ inputs.unit_tests }}"
           echo "upload_artifacts: ${{ inputs.upload_artifacts }}"
+          echo "is_pre_release: ${{ inputs.is_pre_release }}"
+          echo "is_preprod: ${{ inputs.is_preprod }}"
+          echo "is_production: ${{ inputs.is_production }}"
+          echo "prev_step_result: ${{ inputs.prev_step_result }}"
 
           echo "Parsed cache keys:"
           echo "test_key: ${{ fromJSON(inputs.cache_keys).test_key }}"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
 
+          # Sprawdzenie czy należy wykonać testy na podstawie typu release i wyniku poprzedniego kroku
+          RUN_TESTS="true"
+          REASON=""
+
+          if [[ "${{ inputs.is_production }}" == "true" ]]; then
+            # Dla produkcyjnych releasów pomijamy testy
+            RUN_TESTS="false"
+            REASON="Production release detected, skipping tests"
+          elif [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+            # Dla pre-produkcyjnych releasów pomijamy testy
+            RUN_TESTS="false"
+            REASON="Pre-production release detected, skipping tests"
+          elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+            # Dla pre-release wykonujemy testy, ale tylko jeśli poprzedni krok się powiódł
+            if [[ "${{ inputs.prev_step_result }}" == "success" ]]; then
+              RUN_TESTS="true"
+              REASON="Pre-release detected, performing tests"
+            else
+              RUN_TESTS="false"
+              REASON="Previous step failed, skipping tests"
+            fi
+          else
+            # W innych przypadkach wykonujemy testy
+            RUN_TESTS="true"
+            REASON="Regular build, performing tests"
+          fi
+
+          echo "run_tests=${RUN_TESTS}" >> $GITHUB_OUTPUT
+          echo "reason=${REASON}" >> $GITHUB_OUTPUT
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+        if: steps.check_inputs.outputs.run_tests == 'true'
 
       - name: ⚡ Cache dependencies
         uses: actions/cache@v4
@@ -106,6 +164,7 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).deps_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
+        if: steps.check_inputs.outputs.run_tests == 'true'
 
       - name: ⚡ Cache test
         uses: actions/cache@v4
@@ -116,14 +175,17 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).test_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).test_key }}
+        if: steps.check_inputs.outputs.run_tests == 'true'
 
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
+        if: steps.check_inputs.outputs.run_tests == 'true'
 
       - name: 🔍 Check installation requirements
         id: check-storybook-build
+        if: steps.check_inputs.outputs.run_tests == 'true'
         run: |
           INSTALL_STORYBOOK="false"
           if [[ "${{ inputs.storybook_build }}" == "true" ]]; then
@@ -134,42 +196,42 @@ jobs:
           echo "install_storybook=${INSTALL_STORYBOOK}" >> $GITHUB_OUTPUT
 
       - name: 📦 Install dependencies
-        if: inputs.install_deps == 'true'
+        if: inputs.install_deps == 'true' && steps.check_inputs.outputs.run_tests == 'true'
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🎭 Install Playwright (if needed)
-        if: inputs.install_playwright == 'true' && (inputs.e2e_tests == true || inputs.smoke_tests == true)
+        if: inputs.install_playwright == 'true' && (inputs.e2e_tests == true || inputs.smoke_tests == true) && steps.check_inputs.outputs.run_tests == 'true'
         run: yarn playwright:install
 
       - name: 🧪 Run unit tests
-        if: inputs.unit_tests == true
+        if: inputs.unit_tests == true && steps.check_inputs.outputs.run_tests == 'true'
         run: yarn test:unit
         env:
           CI: true
           FORCE_COLOR: 1
 
       - name: 📚 Build Storybook
-        if: steps.check-storybook-build.outputs.install_storybook == 'true'
+        if: steps.check-storybook-build.outputs.install_storybook == 'true' && steps.check_inputs.outputs.run_tests == 'true'
         run: yarn storybook:build
 
       - name: 🔥 Run smoke tests
-        if: inputs.smoke_tests == true && inputs.storybook_build == true
+        if: inputs.smoke_tests == true && inputs.storybook_build == true && steps.check_inputs.outputs.run_tests == 'true'
         run: |
           yarn test:smoke:ci
         env:
           FORCE_COLOR: 1
 
       - name: 🤖 Run E2E tests
-        if: inputs.e2e_tests == true
+        if: inputs.e2e_tests == true && steps.check_inputs.outputs.run_tests == 'true'
         run: yarn test:e2e
         env:
           PLAYWRIGHT_BROWSER: ${{ matrix.browser || 'chromium' }}
           FORCE_COLOR: 1
 
       - name: 📊 Upload test reports
-        if: failure() || inputs.upload_artifacts == true
+        if: (failure() || inputs.upload_artifacts == true) && steps.check_inputs.outputs.run_tests == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.browser || 'chromium' }}
@@ -182,6 +244,17 @@ jobs:
       - name: 📝 Summary
         id: summary
         run: |
+          DETAILS=()
+          if [[ "${{ steps.check_inputs.outputs.run_tests }}" == "true" ]]; then
+            # Wszystkie włączone testy
+            [[ "${{ inputs.unit_tests }}" == "true" ]] && DETAILS+=("- Unit tests with Node.js ${{ inputs.node_version }}")
+            [[ "${{ inputs.smoke_tests }}" == "true" && "${{ inputs.storybook_build }}" == "true" ]] && DETAILS+=("- Smoke tests")
+            [[ "${{ inputs.e2e_tests }}" == "true" ]] && DETAILS+=("- E2E tests with ${{ matrix.browser || 'chromium' }}")
+          else
+            # Jeśli pomijamy testy
+            DETAILS+=("- Tests skipped: ${{ steps.check_inputs.outputs.reason }}")
+          fi
+
           # Przygotowanie podsumowania
           test_summary=$(jq -n \
             --arg title "### Wyniki testów 📊" \
@@ -189,12 +262,15 @@ jobs:
             --arg node "${{ inputs.node_version }}" \
             --arg browser "${PLAYWRIGHT_BROWSER:-chromium}" \
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+            --arg run_tests "${{ steps.check_inputs.outputs.run_tests }}" \
+            --arg reason "${{ steps.check_inputs.outputs.reason }}" \
             --argjson details "$(printf '%s\n' "${DETAILS[@]}" | jq -R . | jq -s .)" \
             '{
               markdown: {
                 title: $title,
                 subtitle: $subtitle,
-                details: $details
+                details: $details,
+                run_status: (if $run_tests == "true" then "✅ Wykonano testy" else "⏭️ Pominięto testy: " + $reason end)
               },
               data: {
                 unit_tests: ${{ inputs.unit_tests }},
@@ -203,7 +279,13 @@ jobs:
                 storybook_built: ${{ inputs.storybook_build }},
                 browser: $browser,
                 node_version: $node,
-                timestamp: $time
+                timestamp: $time,
+                run_tests: ($run_tests == "true"),
+                is_pre_release: ${{ inputs.is_pre_release }},
+                is_preprod: ${{ inputs.is_preprod }},
+                is_production: ${{ inputs.is_production }},
+                prev_step_result: "${{ inputs.prev_step_result }}",
+                reason: $reason
               }
             }')
 
@@ -211,8 +293,13 @@ jobs:
           {
             echo "$test_summary" | jq -r '.markdown.title'
             echo ""
-            echo "$test_summary" | jq -r '.markdown.subtitle'
-            echo "$test_summary" | jq -r '.markdown.details[]'
+
+            if [[ "${{ steps.check_inputs.outputs.run_tests }}" == "true" ]]; then
+              echo "$test_summary" | jq -r '.markdown.subtitle'
+              echo "$test_summary" | jq -r '.markdown.details[]'
+            else
+              echo "$test_summary" | jq -r '.markdown.run_status'
+            fi
           } >> $GITHUB_STEP_SUMMARY
 
           # Export danych do outputs

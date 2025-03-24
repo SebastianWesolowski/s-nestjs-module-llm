@@ -53,12 +53,7 @@ jobs:
 
   pre_release_checks:
     name: Pre-release Checks
-    needs: setup
-    if: |
-      github.event.inputs.is_pre_release ||
-      contains(github.ref, 'develop') ||
-      contains(github.ref, 'feature/') ||
-      contains(github.ref, 'dev')
+    needs: [setup]
     uses: ./.github/workflows/reusable-lint.yml
     with:
       node_version: ${{ needs.setup.outputs.node_version }}
@@ -70,15 +65,14 @@ jobs:
       upload_artifacts: true
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
 
   pre_release_tests:
     name: Pre-release Tests
-    needs: [setup]
-    if: |
-      github.event.inputs.is_pre_release ||
-      contains(github.ref, 'develop') ||
-      contains(github.ref, 'feature/') ||
-      contains(github.ref, 'dev')
+    needs: [setup, pre_release_checks]
+    if: always()
     uses: ./.github/workflows/reusable-test.yml
     with:
       node_version: ${{ needs.setup.outputs.node_version }}
@@ -90,29 +84,28 @@ jobs:
       install_playwright: ${{ needs.setup.outputs.install_playwright }}
       upload_artifacts: true
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
+      is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
+      is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
+      prev_step_result: ${{ needs.pre_release_checks.result }}
 
   release:
     name: Release
-    needs: [setup]
-    if: |
-      success() &&
-      (
-        (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) ||
-        (
-          (github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev')) &&
-          (needs.pre_release_checks.result == 'success' && needs.pre_release_tests.result == 'success')
-        )
-      )
+    needs: [setup, pre_release_checks, pre_release_tests]
+    if: always()
     uses: ./.github/workflows/reusable-release.yml
     with:
       dry_run: ${{ github.event.inputs.dry_run }}
       is_pre_release: ${{ github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev') }}
       is_preprod: ${{ github.event.inputs.is_preprod || (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) }}
+      is_production: ${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}
       release_branch: ${{ github.ref_name }}
       build_command: ${{ github.event.inputs.build_command || 'build:package' }}
       node_version: ${{ needs.setup.outputs.node_version }}
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
+      lint_result: ${{ needs.pre_release_checks.result }}
+      tests_result: ${{ needs.pre_release_tests.result }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

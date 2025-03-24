@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false
+      is_production:
+        description: 'Whether this is a production release (from main/master)'
+        required: false
+        type: boolean
+        default: false
       release_branch:
         description: 'Branch to release from'
         required: false
@@ -45,6 +50,17 @@ on:
         description: 'Cache keys configuration'
         required: true
         type: string
+      # Rezultaty poprzednich kroków
+      lint_result:
+        description: 'Result of the lint job'
+        required: false
+        type: string
+        default: 'success'
+      tests_result:
+        description: 'Result of the tests job'
+        required: false
+        type: string
+        default: 'success'
     secrets:
       GH_TOKEN:
         description: 'GitHub token with repo scope'
@@ -68,16 +84,20 @@ jobs:
 
     steps:
       - name: 🔍 inputs
+        id: check_inputs
         run: |
           echo "Debugowanie inputów workflow:"
           echo "dry_run: ${{ inputs.dry_run }}"
           echo "is_pre_release: ${{ inputs.is_pre_release }}"
           echo "is_preprod: ${{ inputs.is_preprod }}"
+          echo "is_production: ${{ inputs.is_production }}"
           echo "release_branch: ${{ inputs.release_branch }}"
           echo "build_command: ${{ inputs.build_command }}"
           echo "install_args: ${{ inputs.install_args }}"
           echo "node_version: ${{ inputs.node_version }}"
           echo "install_deps: ${{ inputs.install_deps }}"
+          echo "lint_result: ${{ inputs.lint_result }}"
+          echo "tests_result: ${{ inputs.tests_result }}"
 
           echo "Parsed cache keys:"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
@@ -87,21 +107,53 @@ jobs:
           echo "GH_TOKEN: ${{ secrets.GH_TOKEN != '' }}"
           echo "NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}"
 
+          # Sprawdzenie czy należy wykonać release na podstawie typu i wyników poprzednich kroków
+          DO_RELEASE="true"
+          REASON=""
+
+          if [[ "${{ inputs.is_production }}" == "true" ]]; then
+            # Dla produkcyjnych releasów zawsze wykonujemy
+            DO_RELEASE="true"
+            REASON="Production release"
+          elif [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+            # Dla pre-produkcyjnych releasów (PR do main/master) zawsze wykonujemy
+            DO_RELEASE="true"
+            REASON="Pre-production release (PR to main/master)"
+          elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+            # Dla pre-release wykonujemy tylko jeśli poprzednie kroki były OK
+            if [[ "${{ inputs.lint_result }}" == "success" && "${{ inputs.tests_result }}" == "success" ]]; then
+              DO_RELEASE="true"
+              REASON="Pre-release with successful lint and tests"
+            else
+              DO_RELEASE="false"
+              REASON="Previous steps (lint or tests) failed"
+            fi
+          else
+            # W innych przypadkach wykonujemy release
+            DO_RELEASE="true"
+            REASON="Regular build"
+          fi
+
+          echo "do_release=${DO_RELEASE}" >> $GITHUB_OUTPUT
+          echo "reason=${REASON}" >> $GITHUB_OUTPUT
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
           ref: ${{ inputs.release_branch }}
+        if: steps.check_inputs.outputs.do_release == 'true'
 
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: 'yarn'
+        if: steps.check_inputs.outputs.do_release == 'true'
 
       - name: ⚡ Cache dependencies
-        if: inputs.install_deps != 'true'
+        if: inputs.install_deps != 'true' && steps.check_inputs.outputs.do_release == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -111,30 +163,31 @@ jobs:
             ${{ fromJSON(inputs.cache_keys).deps_key }}
 
       - name: 📦 Install dependencies
-        if: inputs.install_deps == 'true'
+        if: inputs.install_deps == 'true' && steps.check_inputs.outputs.do_release == 'true'
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }}
 
       - name: 🔍 Check next release version
         id: next-version
-        if: inputs.is_pre_release || inputs.dry_run
+        if: (inputs.is_pre_release || inputs.dry_run) && steps.check_inputs.outputs.do_release == 'true'
         run: |
           NEXT_VERSION=$(npx semantic-release --dry-run | grep "next release version is" -i | sed 's/.*is //')
           echo "Next version will be: $NEXT_VERSION"
           echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: 🗑️ Clean specific tag if exists
-        if: inputs.is_pre_release && steps.next-version.outputs.version != ''
+        if: inputs.is_pre_release && steps.next-version.outputs.version != '' && steps.check_inputs.outputs.do_release == 'true'
         run: |
           echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
           git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
 
       - name: 🏗️ Build project
+        if: steps.check_inputs.outputs.do_release == 'true'
         run: yarn ${{ inputs.build_command }}
 
       - name: 🚀 Release
-        if: inputs.dry_run != true
+        if: inputs.dry_run != true && steps.check_inputs.outputs.do_release == 'true'
         run: |
           # Sprawdź dostępność NPM_TOKEN
           if [[ -n "$NPM_TOKEN" ]]; then
@@ -173,34 +226,46 @@ jobs:
           # Określ tryb (dry-run lub rzeczywisty)
           MODE="${{ inputs.dry_run && '(DRY RUN)' || '(ACTUAL RELEASE)' }}"
 
+          # Określ status (wykonano lub pominięto)
+          if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
+            EXEC_STATUS="✅ Release wykonany"
+          else
+            EXEC_STATUS="⏭️ Release pominięty: ${{ steps.check_inputs.outputs.reason }}"
+          fi
+
           echo "### Release Status Summary 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Type:** ${RELEASE_TYPE}" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${MODE}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${EXEC_STATUS}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ inputs.release_branch }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Build command:** ${{ inputs.build_command }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Node version:** ${{ inputs.node_version }}" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "- **Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
-            if [[ "${{ steps.next-version.outputs.version }}" != "" ]]; then
-              echo "- **Version:** v${{ steps.next-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
+            if [ "${{ job.status }}" == "success" ]; then
+              echo "- **Result:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+              if [[ "${{ steps.next-version.outputs.version }}" != "" ]]; then
+                echo "- **Version:** v${{ steps.next-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+              fi
+
+              # Dodatkowe informacje o typie wydania
+              if [[ "${{ inputs.is_preprod }}" == "true" ]]; then
+                echo "- **Tag suffix:** preprod" >> $GITHUB_STEP_SUMMARY
+              elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
+                echo "- **Tag suffix:** beta" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "- **Result:** ❌ Failed" >> $GITHUB_STEP_SUMMARY
+              echo "- **Details:** Please check the logs for more information" >> $GITHUB_STEP_SUMMARY
             fi
 
-            # Dodatkowe informacje o typie wydania
-            if [[ "${{ inputs.is_preprod }}" == "true" ]]; then
-              echo "- **Tag suffix:** preprod" >> $GITHUB_STEP_SUMMARY
-            elif [[ "${{ inputs.is_pre_release }}" == "true" ]]; then
-              echo "- **Tag suffix:** beta" >> $GITHUB_STEP_SUMMARY
+            # Dodaj informacje o NPM
+            if [[ -n "$NPM_TOKEN" ]]; then
+              echo "- **Publishing to:** GitHub + NPM" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- **Publishing to:** GitHub only" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "- **Status:** ❌ Failed" >> $GITHUB_STEP_SUMMARY
-            echo "- **Details:** Please check the logs for more information" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          # Dodaj informacje o NPM
-          if [[ -n "$NPM_TOKEN" ]]; then
-            echo "- **Publishing to:** GitHub + NPM" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- **Publishing to:** GitHub only" >> $GITHUB_STEP_SUMMARY
+            echo "- **Previous steps:** Lint: ${{ inputs.lint_result }}, Tests: ${{ inputs.tests_result }}" >> $GITHUB_STEP_SUMMARY
           fi
