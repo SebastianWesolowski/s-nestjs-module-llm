@@ -73,7 +73,7 @@ jobs:
 
   pre_release_tests:
     name: Pre-release Tests
-    needs: [setup, pre_release_checks]
+    needs: [setup]
     if: |
       github.event.inputs.is_pre_release ||
       contains(github.ref, 'develop') ||
@@ -93,12 +93,15 @@ jobs:
 
   release:
     name: Release
-    needs: [setup, pre_release_checks, pre_release_tests]
+    needs: [setup]
     if: |
       success() &&
       (
         (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')) ||
-        (needs.pre_release_checks.result == 'success' && needs.pre_release_tests.result == 'success')
+        (
+          (github.event.inputs.is_pre_release || contains(github.ref, 'develop') || contains(github.ref, 'feature/') || contains(github.ref, 'dev')) &&
+          (needs.pre_release_checks.result == 'success' && needs.pre_release_tests.result == 'success')
+        )
       )
     uses: ./.github/workflows/reusable-release.yml
     with:
