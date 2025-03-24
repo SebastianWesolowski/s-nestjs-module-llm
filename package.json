@@ -1,5 +1,5 @@
 {
-  "name": "s-prettier",
+  "name": "s-nestjs-module-llm",
   "version": "0.0.0-development",
   "description": "A template for creating npm packages using TypeScript",
   "private": true,
@@ -51,6 +51,9 @@
     "husky:prepare-commit-msg": "exec < /dev/tty && yarn commit --hook || true",
     "commit": "czg",
     "prepare": "husky",
+    "ℹ️ info:Release": "ℹ️",
+    "release": "semantic-release --debug",
+    "release:dry": "cross-env SKIP_TRANSFORM=true semantic-release --debug --dry-run",
     "ℹ️ info:Tools": "ℹ️",
     "mkdir:reports": "mkdir -p reports",
     "ngrok": "ngrok http 3000 --request-header-add=\"ngrok-skip-browser-warning: 1\"",
@@ -135,7 +138,7 @@
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.5.3",
-    "s-prettier": "^1.1.0",
+    "s-nestjs-module-llm": "^1.1.0",
     "s-update-manager": "^1.0.0-dev.48",
     "semantic-release": "^24.2.2",
     "source-map-support": "^0.5.21",
@@ -149,7 +152,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SebastianWesolowski/s-prettier.git"
+    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm.git"
   },
   "license": "MIT",
   "author": {
@@ -161,9 +164,9 @@
     "node": ">=20.17.0"
   },
   "bugs": {
-    "url": "https://github.com/SebastianWesolowski/s-prettier/issues"
+    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm/issues"
   },
-  "homepage": "https://github.com/SebastianWesolowski/s-prettier#readme",
+  "homepage": "https://github.com/SebastianWesolowski/s-nestjs-module-llm#readme",
   "config": {
     "commitizen": {
       "path": "node_modules/cz-git"
