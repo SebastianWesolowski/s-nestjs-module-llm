@@ -76,7 +76,7 @@ jobs:
     timeout-minutes: 30
 
     env:
-      FORCE_COLOR: 1
+      # FORCE_COLOR: 1
       NODE_ENV: production
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       # GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -215,30 +215,26 @@ jobs:
           ref: ${{ inputs.release_branch }}
         if: steps.check_inputs.outputs.do_release == 'true'
 
-      - name: 🟢 Setup Node.js ${{ inputs.node_version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: 'yarn'
-        if: steps.check_inputs.outputs.do_release == 'true'
-
       - name: ⚡ Cache dependencies
-        if: inputs.install_deps != 'true' && steps.check_inputs.outputs.do_release == 'true'
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ github.workspace }}/node_modules/
+          path: ${{ github.workspace }}/node_modules/
           key: ${{ fromJSON(inputs.cache_keys).deps_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
 
+      - name: 🟢 Setup Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
       - name: 📦 Install dependencies
-        if: inputs.install_deps == 'true' && steps.check_inputs.outputs.do_release == 'true'
+        if: inputs.install_deps == 'true'
         run: |
           yarn config set network-timeout 300000
-          yarn install ${{ inputs.install_args }}
+          yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
-      - name: 🔍 Check next release version
+      - name: '🔍 Check next release version'
         id: next-version
         if: (inputs.is_pre_release || inputs.dry_run) && steps.check_inputs.outputs.do_release == 'true'
         run: |
@@ -246,11 +242,12 @@ jobs:
           echo "Next version will be: $NEXT_VERSION"
           echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
 
-      - name: 🗑️ Clean specific tag if exists
-        if: inputs.is_pre_release && steps.next-version.outputs.version != '' && steps.check_inputs.outputs.do_release == 'true'
+      - name: '🗑️ Clean specific tag if exists'
+        if: steps.next-version.outputs.version != ''
         run: |
           echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
           git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
+          git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
 
       - name: 🏗️ Build project
         if: steps.check_inputs.outputs.do_release == 'true'
