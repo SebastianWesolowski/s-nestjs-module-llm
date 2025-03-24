@@ -135,34 +135,33 @@ jobs:
       - name: 🏗️ Build project
         run: yarn ${{ inputs.build_command }}
 
-      - name: 🚀 Release to NPM and GitHub
-        if: inputs.dry_run != true && secrets.NPM_TOKEN != ''
+      - name: 🚀 Release
+        if: inputs.dry_run != true
         run: |
-          if ${{ inputs.is_preprod }}; then
-            npx semantic-release --prerelease preprod
-          elif ${{ inputs.is_pre_release }}; then
-            npx semantic-release --prerelease beta
+          # Sprawdź dostępność NPM_TOKEN
+          if [[ -n "$NPM_TOKEN" ]]; then
+            echo "Publishing to NPM and GitHub..."
+            if ${{ inputs.is_preprod }}; then
+              npx semantic-release --prerelease preprod
+            elif ${{ inputs.is_pre_release }}; then
+              npx semantic-release --prerelease beta
+            else
+              npx semantic-release
+            fi
           else
-            npx semantic-release
+            echo "Publishing to GitHub only..."
+            if ${{ inputs.is_preprod }}; then
+              npx semantic-release --prerelease preprod
+            elif ${{ inputs.is_pre_release }}; then
+              npx semantic-release --prerelease beta
+            else
+              npx semantic-release
+            fi
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: 🚀 Release to GitHub only
-        if: inputs.dry_run != true && secrets.NPM_TOKEN == ''
-        run: |
-          if ${{ inputs.is_preprod }}; then
-            npx semantic-release --prerelease preprod
-          elif ${{ inputs.is_pre_release }}; then
-            npx semantic-release --prerelease beta
-          else
-            npx semantic-release
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: 📋 Post Release Status
         if: always()
@@ -202,7 +201,7 @@ jobs:
           fi
 
           # Dodaj informacje o NPM
-          if [[ "${{ secrets.NPM_TOKEN }}" != "" ]]; then
+          if [[ -n "$NPM_TOKEN" ]]; then
             echo "- **Publishing to:** GitHub + NPM" >> $GITHUB_STEP_SUMMARY
           else
             echo "- **Publishing to:** GitHub only" >> $GITHUB_STEP_SUMMARY
