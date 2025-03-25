@@ -1,3 +1,15 @@
+## [1.4.0-feature.1](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.3.0...v1.4.0-feature.1) (March 25, 2025)
+
+
+### Other tasks
+
+- GA ([ee4b551](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/ee4b5519f100d97625cffe79b3e25832573edbc8))
+- GA ([84fb592](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/84fb5927bbdbe2f227c850643d36386fab6b1ee5))
+- 🐛 ga ([d888134](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/d88813456328c5e318396d37e6797828b711f9e3))
+- 🐛 next fix ([dae5d24](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/dae5d242ab006369677777b1296a628649d07d8e))
+- ✨ fix ([5f28066](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/5f280662c8ccb22ad2b501af27651ce5678a7586))
+- ✨ change GHA ([249f40e](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/249f40ec696e2b99c3eb3fa6ba481b6606c15751))
+
 ## [1.3.0](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.2.0...v1.3.0) (March 25, 2025)
 
 
