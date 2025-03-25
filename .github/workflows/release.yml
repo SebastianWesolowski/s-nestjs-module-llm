@@ -98,8 +98,6 @@ jobs:
           echo "node_version: '${{ needs.setup.outputs.node_version }}'"
           echo "install_deps: '${{ needs.setup.outputs.install_deps }}'"
           echo "install_playwright: '${{ needs.setup.outputs.install_playwright }}'"
-          echo "lint_result: '${{ needs.lint.result }}'"
-          echo "tests_result: '${{ needs.test.result }}'"
 
           echo "=== 🔄 GitHub Context ==="
           echo "github.ref: '${{ github.ref }}'"
@@ -128,8 +126,6 @@ jobs:
             echo "| node_version | ${{ needs.setup.outputs.node_version }} |"
             echo "| install_deps | ${{ needs.setup.outputs.install_deps }} |"
             echo "| install_playwright | ${{ needs.setup.outputs.install_playwright }} |"
-            echo "| lint_result | ${{ needs.lint.result }} |"
-            echo "| tests_result | ${{ needs.test.result }} |"
             echo ""
             echo "#### Git Context"
             echo "| Variable | Value |"
@@ -150,8 +146,6 @@ jobs:
       node_version: ${{ needs.setup.outputs.node_version }}
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
-      lint_result: ${{ needs.lint.result }}
-      tests_result: ${{ needs.test.result }}
       framework_type: ${{ needs.setup.outputs.framework_type }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
