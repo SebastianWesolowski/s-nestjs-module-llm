@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.2.0...v1.3.0) (March 25, 2025)
+
+
+### Other tasks
+
+- ✨ relase type ([89fcb48](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/89fcb48c01b0688c5a2871d4517a5fceeb2bef1d))
+
 ## [1.2.0](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.1.2...v1.2.0) (March 25, 2025)
 
 
