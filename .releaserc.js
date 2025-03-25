@@ -60,9 +60,9 @@ module.exports = {
       name: 'feature/*',
       channel: 'feature',
       prerelease: (name) => {
-        const featureName = name.replace(/^feature\//, '');
+        const featureName = name.replace(/^feature\//, '').replace(/[^0-9A-Za-z-]/g, '-');
         const hash = getCommitHash();
-        return `feature.${featureName}.${hash}`;
+        return `feature-${featureName}-${hash}`;
       },
     },
   ],
