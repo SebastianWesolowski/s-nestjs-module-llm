@@ -36,6 +36,9 @@ on:
       release_type_detected:
         description: 'Detected release type'
         value: ${{ jobs.setup.outputs.release_type_detected }}
+      framework_type:
+        description: 'Detected framework type'
+        value: ${{ jobs.setup.outputs.framework_type }}
 
 jobs:
   setup:
