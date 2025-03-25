@@ -40,6 +40,11 @@ on:
         required: false
         type: string
         default: 'success'
+      framework_type:
+        description: 'Type of framework (next, nest, react)'
+        required: false
+        type: string
+        default: 'next'
     secrets:
       GH_TOKEN:
         description: 'GitHub token with repo scope'
@@ -205,6 +210,32 @@ jobs:
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
 
+      - name: ⚡ Cache NextBuild
+        if: inputs.framework_type == 'next'
+        uses: actions/cache@v4
+        id: next-cache
+        continue-on-error: true
+        with:
+          path: |
+            ${{ github.workspace }}/.next/
+            ${{ github.workspace }}/out/
+          key: ${{ fromJSON(inputs.cache_keys).nextBuild_key }}
+          restore-keys: |
+            ${{ fromJSON(inputs.cache_keys).nextBuild_key }}
+
+      - name: ⚡ Cache nestBuild
+        if: inputs.framework_type == 'nest'
+        uses: actions/cache@v4
+        id: nest-cache
+        continue-on-error: true
+        with:
+          path: |
+            ${{ github.workspace }}/next.config.js
+            ${{ github.workspace }}/dist/
+          key: ${{ fromJSON(inputs.cache_keys).nestBuild_key }}
+          restore-keys: |
+            ${{ fromJSON(inputs.cache_keys).nestBuild_key }}
+
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
@@ -215,6 +246,20 @@ jobs:
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
+
+      - name: 🔍 Sprawdź status cache
+        id: check-cache
+        run: |
+          if [[ "${{ inputs.framework_type }}" == "next" && "${{ steps.next-cache.outputs.cache-hit }}" == "true" ]]; then
+            echo "cache_hit=true" >> $GITHUB_OUTPUT
+            echo "✅ Znaleziono cache dla Next.js, budowanie zostanie pominięte"
+          elif [[ "${{ inputs.framework_type }}" == "nest" && "${{ steps.nest-cache.outputs.cache-hit }}" == "true" ]]; then
+            echo "cache_hit=true" >> $GITHUB_OUTPUT
+            echo "✅ Znaleziono cache dla Nest.js, budowanie zostanie pominięte"
+          else
+            echo "cache_hit=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Nie znaleziono cache, aplikacja zostanie zbudowana"
+          fi
 
       - name: '🔍 Check next release version'
         id: next-version
@@ -237,7 +282,7 @@ jobs:
           fi
 
       - name: 🏗️ Build project
-        if: steps.check_inputs.outputs.do_release == 'true'
+        if: steps.check_inputs.outputs.do_release == 'true' && steps.check-cache.outputs.cache_hit != 'true'
         run: yarn build:package
 
       - name: 🚀 Release
@@ -293,6 +338,15 @@ jobs:
             EXEC_STATUS="⏭️ Release pominięty: ${{ steps.check_inputs.outputs.reason }}"
           fi
 
+          # Określ status budowy
+          if [[ "${{ steps.check-cache.outputs.cache_hit }}" == "true" ]]; then
+            BUILD_STATUS="🚀 Budowanie pominięte - użyto cache"
+            BUILD_DETAILS="[Cache] Użyto zapisanej wersji dla ${{ inputs.framework_type }}"
+          else
+            BUILD_STATUS="🏗️ Budowanie wykonane"
+            BUILD_DETAILS="[Build] Wykonano pełny proces budowania"
+          fi
+
           echo "### Release Status Summary 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Type:** ${{ inputs.release_type_detected }}" >> $GITHUB_STEP_SUMMARY
@@ -300,6 +354,9 @@ jobs:
           echo "- **Status:** ${EXEC_STATUS}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ inputs.release_branch }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Node version:** ${{ inputs.node_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** ${BUILD_STATUS}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build details:** ${BUILD_DETAILS}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cache używane:** ${{ steps.check-cache.outputs.cache_hit == 'true' }}" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
             if [ "${{ job.status }}" == "success" ]; then

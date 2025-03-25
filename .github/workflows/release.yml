@@ -79,6 +79,7 @@ jobs:
       upload_artifacts: true
       release_type_detected: ${{ needs.setup.outputs.release_type_detected }}
       framework_type: ${{ needs.setup.outputs.framework_type }}
+
   debug_variables:
     name: Debug Variables
     needs: [setup, lint, test]
@@ -151,6 +152,7 @@ jobs:
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
       lint_result: ${{ needs.lint.result }}
       tests_result: ${{ needs.test.result }}
+      framework_type: ${{ needs.setup.outputs.framework_type }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
