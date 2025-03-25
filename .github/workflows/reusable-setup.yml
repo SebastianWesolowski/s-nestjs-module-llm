@@ -93,23 +93,33 @@ jobs:
 
           echo "cache_keys=$(echo $CACHE_KEYS | jq -c .)" >> $GITHUB_OUTPUT
 
-      - name: ⚡ Check dependencies
+      - name: ⚡ Check framework type
         id: check-deps
         run: |
           FRAMEWORK_TYPE=""
 
+          # Wypisanie wszystkich plików w bieżącym katalogu
+          echo "📂 Lista plików w katalogu:"
+          ls -la
+
+          echo "🔍 Sprawdzanie czy package.json istnieje..."
           if [ -f "package.json" ]; then
+            echo "✅ Plik package.json znaleziony"
+            echo "📄 Zawartość package.json:"
+            cat package.json | grep -E "next|@nestjs|react"
+
             # Sprawdzanie Next.js
-            if grep -q '"next":' package.json; then
+            if grep -qE '"next"|"next":' package.json || grep -qE "'next'|'next':" package.json; then
               FRAMEWORK_TYPE="next"
             # Sprawdzanie NestJS
-            elif grep -q '"@nestjs\/core":' package.json; then
+            elif grep -qE '"@nestjs/core"|"@nestjs/core":' package.json || grep -qE "'@nestjs/core'|'@nestjs/core':" package.json; then
               FRAMEWORK_TYPE="nest"
             # Sprawdzanie React (bez Next.js)
-            elif grep -q '"react":' package.json && ! grep -q '"next":' package.json; then
+            elif (grep -qE '"react"|"react":' package.json || grep -qE "'react'|'react':" package.json) && ! (grep -qE '"next"|"next":' package.json || grep -qE "'next'|'next':" package.json); then
               FRAMEWORK_TYPE="react"
             fi
 
+            echo "🔍 Wykryty framework: ${FRAMEWORK_TYPE}"
             echo "framework_type=${FRAMEWORK_TYPE}" >> $GITHUB_OUTPUT
             echo "FRAMEWORK_TYPE=${FRAMEWORK_TYPE}" >> $GITHUB_ENV
           else
