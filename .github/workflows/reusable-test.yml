@@ -63,12 +63,11 @@ on:
         required: false
         type: string
         default: 'prerelease'
-      # Informacja o wyniku poprzedniego kroku
-      prev_step_result:
-        description: 'Result of the previous step'
+      framework_type:
+        description: 'Type of framework detected (next, nest, react)'
         required: false
         type: string
-        default: 'success'
+        default: 'next'
     outputs:
       test_summary:
         description: 'Summary of test results'
@@ -102,87 +101,36 @@ jobs:
           echo "unit_tests: ${{ inputs.unit_tests }}"
           echo "upload_artifacts: ${{ inputs.upload_artifacts }}"
           echo "release_type_detected: ${{ inputs.release_type_detected }}"
-          echo "prev_step_result: ${{ inputs.prev_step_result }}"
+          echo "framework_type: ${{ inputs.framework_type }}"
 
           echo "Parsed cache keys:"
           echo "test_key: ${{ fromJSON(inputs.cache_keys).test_key }}"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
 
-          # Sprawdzenie czy należy wykonać testy na podstawie typu release
-          RUN_TEST="true"
-          REASON=""
+          # Ustawienie zmiennych, które będą używane w krokach warunkowych
+          echo "run_unit_tests=${{ inputs.unit_tests }}" >> $GITHUB_OUTPUT
+          echo "run_e2e_tests=${{ inputs.e2e_tests }}" >> $GITHUB_OUTPUT
+          echo "run_smoke_tests=${{ inputs.smoke_tests }}" >> $GITHUB_OUTPUT
+          echo "build_storybook=${{ inputs.storybook_build }}" >> $GITHUB_OUTPUT
 
-          # Jeśli poprzedni krok nie powiódł się, sprawdź czy powinniśmy kontynuować
-          if [[ "${{ inputs.prev_step_result }}" != "success" && "${{ inputs.prev_step_result }}" != "" ]]; then
-            echo "Previous step failed: ${{ inputs.prev_step_result }}"
-
-            # Dla feature i prerelease wymagamy, aby poprzedni krok się powiódł
-            if [[ "${{ inputs.release_type_detected }}" == "feature" || "${{ inputs.release_type_detected }}" == "prerelease" ]]; then
-              RUN_TEST="false"
-              REASON="Previous step failed, skipping tests for non-production release"
-            fi
+          # Określenie, czy w ogóle uruchamiamy testy
+          RUN_TEST="false"
+          if [[ "${{ inputs.unit_tests }}" == "true" || "${{ inputs.e2e_tests }}" == "true" || "${{ inputs.smoke_tests }}" == "true" ]]; then
+            RUN_TEST="true"
           fi
-
-          # Jeśli pierwszy warunek pozwala na wykonanie testów, sprawdź typ wydania
-          if [[ "$RUN_TEST" == "true" ]]; then
-            case "${{ inputs.release_type_detected }}" in
-              "production")
-                # Dla produkcyjnych releasów wykonujemy tylko testy jednostkowe
-                RUN_TEST="true"
-                REASON="Production release detected, running only unit tests"
-                # Ustawienie flag testów
-                echo "run_unit_tests=true" >> $GITHUB_OUTPUT
-                echo "run_e2e_tests=false" >> $GITHUB_OUTPUT
-                echo "run_smoke_tests=false" >> $GITHUB_OUTPUT
-                echo "build_storybook=false" >> $GITHUB_OUTPUT
-                ;;
-              "preprod")
-                # Dla pre-produkcyjnych releasów wykonujemy wszystkie testy
-                RUN_TEST="true"
-                REASON="Pre-production release detected, running all tests"
-                # Ustawienie flag testów
-                echo "run_unit_tests=${{ inputs.unit_tests }}" >> $GITHUB_OUTPUT
-                echo "run_e2e_tests=${{ inputs.e2e_tests }}" >> $GITHUB_OUTPUT
-                echo "run_smoke_tests=${{ inputs.smoke_tests }}" >> $GITHUB_OUTPUT
-                echo "build_storybook=${{ inputs.storybook_build }}" >> $GITHUB_OUTPUT
-                ;;
-              "prerelease"|"feature")
-                # Dla pre-release i feature wykonujemy tylko testy jednostkowe i smoke
-                RUN_TEST="true"
-                REASON="Pre-release/Feature detected, running unit and smoke tests"
-                # Ustawienie flag testów
-                echo "run_unit_tests=${{ inputs.unit_tests }}" >> $GITHUB_OUTPUT
-                echo "run_e2e_tests=false" >> $GITHUB_OUTPUT
-                echo "run_smoke_tests=${{ inputs.smoke_tests }}" >> $GITHUB_OUTPUT
-                echo "build_storybook=${{ inputs.storybook_build }}" >> $GITHUB_OUTPUT
-                ;;
-              *)
-                # W innych przypadkach wykonujemy wszystkie testy
-                RUN_TEST="true"
-                REASON="Unknown release type, running all configured tests"
-                # Ustawienie flag testów
-                echo "run_unit_tests=${{ inputs.unit_tests }}" >> $GITHUB_OUTPUT
-                echo "run_e2e_tests=${{ inputs.e2e_tests }}" >> $GITHUB_OUTPUT
-                echo "run_smoke_tests=${{ inputs.smoke_tests }}" >> $GITHUB_OUTPUT
-                echo "build_storybook=${{ inputs.storybook_build }}" >> $GITHUB_OUTPUT
-                ;;
-            esac
-          else
-            # Jeśli nie wykonujemy testów, ustaw wszystkie flagi na false
-            echo "run_unit_tests=false" >> $GITHUB_OUTPUT
-            echo "run_e2e_tests=false" >> $GITHUB_OUTPUT
-            echo "run_smoke_tests=false" >> $GITHUB_OUTPUT
-            echo "build_storybook=false" >> $GITHUB_OUTPUT
-          fi
-
           echo "run_test=${RUN_TEST}" >> $GITHUB_OUTPUT
+
+          # Jeśli nie uruchamiamy testów, podajemy powód
+          REASON=""
+          if [[ "${RUN_TEST}" == "false" ]]; then
+            REASON="No tests enabled in workflow configuration"
+          fi
           echo "reason=${REASON}" >> $GITHUB_OUTPUT
 
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-        if: steps.check_inputs.outputs.run_test == 'true'
 
       - name: ⚡ Cache test
         uses: actions/cache@v4
@@ -193,7 +141,6 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).test_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).test_key }}
-        if: steps.check_inputs.outputs.run_test == 'true'
 
       - name: ⚡ Cache dependencies
         uses: actions/cache@v4
@@ -203,42 +150,40 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).deps_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
-        if: steps.check_inputs.outputs.run_test == 'true'
 
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
-        if: steps.check_inputs.outputs.run_test == 'true'
 
       - name: 📦 Install dependencies
-        if: inputs.install_deps == 'true' && steps.check_inputs.outputs.run_test == 'true'
+        if: inputs.install_deps == 'true'
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🎭 Install Playwright browsers
-        if: inputs.install_playwright == 'true' && (steps.check_inputs.outputs.run_e2e_tests == 'true' || steps.check_inputs.outputs.run_smoke_tests == 'true') && steps.check_inputs.outputs.run_test == 'true'
+        if: inputs.install_playwright == 'true' && (steps.check_inputs.outputs.run_e2e_tests == 'true' || steps.check_inputs.outputs.run_smoke_tests == 'true')
         run: npx playwright install --with-deps
 
       - name: 🧪 Unit tests
-        if: steps.check_inputs.outputs.run_unit_tests == 'true' && steps.check_inputs.outputs.run_test == 'true'
+        if: steps.check_inputs.outputs.run_unit_tests == 'true'
         run: yarn test:unit
 
       - name: 🧪 E2E tests
-        if: steps.check_inputs.outputs.run_e2e_tests == 'true' && steps.check_inputs.outputs.run_test == 'true'
+        if: steps.check_inputs.outputs.run_e2e_tests == 'true'
         run: yarn test:e2e
 
       - name: 🧪 Smoke tests
-        if: steps.check_inputs.outputs.run_smoke_tests == 'true' && steps.check_inputs.outputs.run_test == 'true'
+        if: steps.check_inputs.outputs.run_smoke_tests == 'true'
         run: yarn test:smoke
 
       - name: 📚 Build Storybook
-        if: steps.check_inputs.outputs.build_storybook == 'true' && steps.check_inputs.outputs.run_test == 'true'
+        if: steps.check_inputs.outputs.build_storybook == 'true'
         run: yarn build:storybook
 
       - name: 📊 Upload test results
-        if: always() && steps.check_inputs.outputs.run_test == 'true' && (failure() || inputs.upload_artifacts == true)
+        if: always() && (failure() || inputs.upload_artifacts == true)
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.browser || 'all' }}
@@ -277,7 +222,8 @@ jobs:
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             --arg run_test "${{ steps.check_inputs.outputs.run_test }}" \
             --arg reason "${{ steps.check_inputs.outputs.reason }}" \
-            --arg release_type "${{ inputs.release_type_detected }}" \
+            --arg release_type_detected "${{ inputs.release_type_detected }}" \
+            --arg framework_type "${{ inputs.framework_type }}" \
             --argjson details "$(printf '%s\n' "${DETAILS[@]}" | jq -R . | jq -s .)" \
             '{
               markdown: {
@@ -292,7 +238,8 @@ jobs:
                 node_version: $node,
                 timestamp: $time,
                 run_test: ($run_test == "true"),
-                release_type: $release_type,
+                release_type_detected: $release_type_detected,
+                framework_type: $framework_type,
                 reason: $reason
               }
             }')
@@ -307,6 +254,7 @@ jobs:
             echo "$test_summary" | jq -r '.markdown.run_status'
             echo ""
             echo "**Release type:** ${{ inputs.release_type_detected }}"
+            echo "**Framework type:** ${{ inputs.framework_type }}"
             echo "**Browser:** ${{ matrix.browser || 'none' }}"
           } >> $GITHUB_STEP_SUMMARY
 

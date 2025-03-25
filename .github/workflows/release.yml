@@ -8,29 +8,14 @@ on:
       - main
       - master
       - develop
-      - 'feature/*'
       - dev
+      - 'feature/*'
   pull_request:
     branches:
       - main
       - master
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        description: 'Perform a dry run (no actual release)'
-        type: boolean
-        default: true
-        required: false
-      release_type:
-        description: 'Typ wydania paczki (auto/production/preprod/prerelease/feature)'
-        type: string
-        required: false
-        default: 'auto'
-      build_command:
-        description: 'Custom build command'
-        type: string
-        required: false
-        default: 'build:package'
+      - develop
+      - dev
 
 # Ensure we don't have multiple release workflows running
 concurrency:
@@ -45,7 +30,6 @@ jobs:
       node_version: '20.17.0'
       setup_playwright: false
       install_args: '--frozen-lockfile'
-      release_type: ${{ github.event.inputs.release_type || 'auto' }}
 
   lint:
     name: Pre-release Checks
@@ -62,6 +46,7 @@ jobs:
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
       release_type_detected: ${{ needs.setup.outputs.release_type_detected }}
+      framework_type: ${{ needs.setup.outputs.framework_type }}
 
   test:
     name: Pre-release Tests
@@ -79,11 +64,11 @@ jobs:
       upload_artifacts: true
       cache_keys: ${{ needs.setup.outputs.cache_keys }}
       release_type_detected: ${{ needs.setup.outputs.release_type_detected }}
-      prev_step_result: ${{ needs.lint.result }}
+      framework_type: ${{ needs.setup.outputs.framework_type }}
 
   build:
     name: Build
-    needs: [setup, lint, test]
+    needs: [setup]
     uses: ./.github/workflows/reusable-build.yml
     with:
       analyze_bundle: ${{ github.event_name == 'pull_request' }}
@@ -93,7 +78,7 @@ jobs:
       production_build: true
       upload_artifacts: true
       release_type_detected: ${{ needs.setup.outputs.release_type_detected }}
-
+      framework_type: ${{ needs.setup.outputs.framework_type }}
   debug_variables:
     name: Debug Variables
     needs: [setup, lint, test]
@@ -105,13 +90,8 @@ jobs:
           echo "=== 🔬 Zmienne przekazywane do reusable-release.yml 🔬 ==="
 
           echo "=== 📋 Inputs ==="
-          echo "dry_run (raw): '${{ github.event.inputs.dry_run }}'"
-          echo "dry_run (converted): '${{ github.event.inputs.dry_run == 'true' }}'"
-          echo "release_type (raw): '${{ github.event.inputs.release_type }}'"
-          echo "release_type (detected): '${{ needs.setup.outputs.release_type_detected }}'"
+          echo "release_type_detected (detected): '${{ needs.setup.outputs.release_type_detected }}'"
           echo "release_branch: '${{ github.ref_name }}'"
-          echo "build_command (raw): '${{ github.event.inputs.build_command }}'"
-          echo "build_command (fallback): '${{ github.event.inputs.build_command || 'build:package' }}'"
 
           echo "=== 🔄 Outputs z poprzednich jobów ==="
           echo "node_version: '${{ needs.setup.outputs.node_version }}'"
@@ -138,10 +118,8 @@ jobs:
             echo "#### Release Configuration"
             echo "| Variable | Raw Value | Detected Value |"
             echo "| --- | --- | --- |"
-            echo "| dry_run | ${{ github.event.inputs.dry_run }} | ${{ github.event.inputs.dry_run == 'true' }} |"
-            echo "| release_type | ${{ github.event.inputs.release_type }} | ${{ needs.setup.outputs.release_type_detected }} |"
+            echo "| release_type_detected | x | ${{ needs.setup.outputs.release_type_detected }} |"
             echo "| release_branch | n/a | ${{ github.ref_name }} |"
-            echo "| build_command | ${{ github.event.inputs.build_command }} | ${{ github.event.inputs.build_command || 'build:package' }} |"
             echo ""
             echo "#### Outputs from Previous Jobs"
             echo "| Variable | Value |"
@@ -166,10 +144,8 @@ jobs:
     if: always()
     uses: ./.github/workflows/reusable-release.yml
     with:
-      dry_run: ${{ github.event.inputs.dry_run == 'true' }}
-      release_type: ${{ needs.setup.outputs.release_type_detected }}
+      release_type_detected: ${{ needs.setup.outputs.release_type_detected }}
       release_branch: ${{ github.ref_name }}
-      build_command: ${{ github.event.inputs.build_command || 'build:package' }}
       node_version: ${{ needs.setup.outputs.node_version }}
       install_deps: ${{ needs.setup.outputs.install_deps }}
       cache_keys: ${{ needs.setup.outputs.cache_keys }}

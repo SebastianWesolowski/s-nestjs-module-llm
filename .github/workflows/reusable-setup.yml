@@ -17,11 +17,6 @@ on:
         description: 'Node.js version to use'
         required: true
         type: string
-      release_type:
-        description: 'Typ wydania paczki (auto/production/preprod/prerelease/feature)'
-        required: false
-        type: string
-        default: 'auto'
     outputs:
       node_version:
         description: 'The Node.js version being used'
@@ -53,6 +48,7 @@ jobs:
       install_deps: ${{ steps.check-installations.outputs.install_deps }}
       setup_summary: ${{ steps.summary.outputs.setup_summary }}
       release_type_detected: ${{ steps.detect-release-type.outputs.release_type_detected }}
+      framework_type: ${{ steps.check-deps.outputs.framework_type }}
 
     steps:
       - name: 📝 Checkout
@@ -72,9 +68,13 @@ jobs:
               "files": [".eslintrc*", ".stylelintrc*", "tsconfig*.json"],
               "prefix": "lint"
             },
-            "build": {
+            "nextBuild": {
               "files": ["next.config.js", "package.json", ".next"],
-              "prefix": "build"
+              "prefix": "nextBuild"
+            },
+            "nestBuild": {
+              "files": ["nest-cli.json", "package.json", "dist"],
+              "prefix": "nestBuild"
             },
             "test": {
               "files": ["playwright.config.*", ".storybook/*", "package.json"],
@@ -93,6 +93,30 @@ jobs:
 
           echo "cache_keys=$(echo $CACHE_KEYS | jq -c .)" >> $GITHUB_OUTPUT
 
+      - name: ⚡ Check dependencies
+        id: check-deps
+        run: |
+          FRAMEWORK_TYPE=""
+
+          if [ -f "package.json" ]; then
+            # Sprawdzanie Next.js
+            if grep -q '"next":' package.json; then
+              FRAMEWORK_TYPE="next"
+            # Sprawdzanie NestJS
+            elif grep -q '"@nestjs\/core":' package.json; then
+              FRAMEWORK_TYPE="nest"
+            # Sprawdzanie React (bez Next.js)
+            elif grep -q '"react":' package.json && ! grep -q '"next":' package.json; then
+              FRAMEWORK_TYPE="react"
+            fi
+
+            echo "framework_type=${FRAMEWORK_TYPE}" >> $GITHUB_OUTPUT
+            echo "FRAMEWORK_TYPE=${FRAMEWORK_TYPE}" >> $GITHUB_ENV
+          else
+            echo "❌ Plik package.json nie został znaleziony"
+            exit 1
+          fi
+
       - name: ⚡ Cache lint
         uses: actions/cache@v4
         continue-on-error: true
@@ -105,18 +129,32 @@ jobs:
           restore-keys: ''
           lookup-only: true
 
-      - name: ⚡ Cache build
+      - name: ⚡ Cache NextBuild
+        if: steps.check-deps.outputs.framework_type == 'next'
         uses: actions/cache@v4
         continue-on-error: true
         with:
           path: |
             ${{ github.workspace }}/.next/
             ${{ github.workspace }}/out/
-          key: ${{ fromJSON(steps.cache-deps.outputs.cache_keys).build_key }}
+          key: ${{ fromJSON(steps.cache-deps.outputs.cache_keys).nextBuild_key }}
+          restore-keys: ''
+          lookup-only: true
+
+      - name: ⚡ Cache nestBuild
+        if: steps.check-deps.outputs.framework_type == 'nest'
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: |
+            ${{ github.workspace }}/next.config.js
+            ${{ github.workspace }}/dist/
+          key: ${{ fromJSON(steps.cache-deps.outputs.cache_keys).nestBuild_key }}
           restore-keys: ''
           lookup-only: true
 
       - name: ⚡ Cache test
+
         id: playwright-cache
         uses: actions/cache@v4
         continue-on-error: true
@@ -168,24 +206,29 @@ jobs:
       - name: 🔍 Wykrywanie typu wydania
         id: detect-release-type
         run: |
-          RELEASE_TYPE="${{ inputs.release_type }}"
           DETECTED_TYPE="unknown"
 
-          # Jeśli wybrano automatyczne wykrywanie
-          if [[ "$RELEASE_TYPE" == "auto" ]]; then
-            if [[ "${{ contains(github.ref, 'main') || contains(github.ref, 'master') }}" == "true" ]]; then
-              DETECTED_TYPE="production"
-            elif [[ "${{ github.event_name }}" == "pull_request" && ("${{ github.base_ref }}" == "main" || "${{ github.base_ref }}" == "master") ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Logika dla pull requestów
+            if [[ "${{ github.base_ref }}" == "main" || "${{ github.base_ref }}" == "master" ]]; then
               DETECTED_TYPE="preprod"
-            elif [[ "${{ contains(github.ref, 'feature/') }}" == "true" ]]; then
-              DETECTED_TYPE="feature"
-            elif [[ "${{ contains(github.ref, 'develop') || contains(github.ref, 'dev') }}" == "true" ]]; then
-              DETECTED_TYPE="prerelease"
-            else
-              DETECTED_TYPE="prerelease" # Domyślnie prerelease jeśli nie można określić
+            elif [[ "${{ github.base_ref }}" == "develop" || "${{ github.base_ref }}" == "dev" ]]; then
+              DETECTED_TYPE="alpha"
             fi
           else
-            DETECTED_TYPE="$RELEASE_TYPE"
+            # Logika dla merge'ów
+            if [[ "${{ github.ref }}" == *"main"* || "${{ github.ref }}" == *"master"* ]]; then
+              DETECTED_TYPE="production"
+            elif [[ "${{ github.ref }}" == *"develop"* || "${{ github.ref }}" == *"dev"* ]]; then
+              DETECTED_TYPE="beta"
+            elif [[ "${{ github.ref }}" == *"feature/"* ]]; then
+              DETECTED_TYPE="feature"
+            fi
+          fi
+
+          # Ustawienie domyślnej wartości jeśli nie wykryto typu
+          if [[ "$DETECTED_TYPE" == "unknown" ]]; then
+            DETECTED_TYPE="feature"
           fi
 
           echo "release_type_detected=$DETECTED_TYPE" >> $GITHUB_OUTPUT
@@ -199,8 +242,9 @@ jobs:
             --arg title "### Konfiguracja środowiska 🛠️" \
             --arg node "$NODE_VERSION" \
             --arg deps "${{ steps.check-installations.outputs.install_deps }}" \
+            --arg framework_type "${{ steps.check-deps.outputs.framework_type }}" \
+            --arg release_type_detected "$RELEASE_TYPE_DETECTED" \
             --arg playwright "${{ steps.check-installations.outputs.install_playwright }}" \
-            --arg release_type "$RELEASE_TYPE_DETECTED" \
             --argjson cache '${{ steps.cache-deps.outputs.cache_keys }}' \
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             '{
@@ -210,7 +254,9 @@ jobs:
                   "🔧 Wersja Node.js: " + $node,
                   "📦 Instalacja zależności: " + $deps,
                   "🎭 Instalacja Playwright: " + $playwright,
-                  "📌 Typ wydania: " + $release_type
+                  "📌 Typ wydania: " + $release_type_detected,
+                  "📦 Typ framework: " + $framework_type,
+                  "🔍 Wykryty typ framework: " + $framework_type
                 ],
                 cache_section: {
                   title: "#### 🔑 Klucze cache:",
@@ -221,7 +267,7 @@ jobs:
                 node_version: $node,
                 install_deps: ($deps == "true"),
                 install_playwright: ($playwright == "true"),
-                release_type: $release_type,
+                release_type_detected: $release_type_detected,
                 cache_keys: $cache,
                 timestamp: $time
               }

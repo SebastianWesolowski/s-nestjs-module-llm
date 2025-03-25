@@ -58,6 +58,11 @@ on:
         required: false
         type: string
         default: 'prerelease'
+      framework_type:
+        description: 'Type of framework detected (next, nest, react)'
+        required: false
+        type: string
+        default: 'next'
     outputs:
       lint_summary:
         description: 'Summary of lint results'
@@ -92,46 +97,10 @@ jobs:
           echo "lint_key: ${{ fromJSON(inputs.cache_keys).lint_key }}"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
 
-          # Sprawdzenie czy należy wykonać linting na podstawie typu release
-          RUN_LINT="true"
-          REASON=""
-
-          case "${{ inputs.release_type_detected }}" in
-            "production")
-              # Dla produkcyjnych releasów pomijamy linting
-              RUN_LINT="false"
-              REASON="Production release detected, skipping lint checks"
-              ;;
-            "preprod")
-              # Dla pre-produkcyjnych releasów wykonujemy linting
-              RUN_LINT="true"
-              REASON="Pre-production release detected, performing lint checks"
-              ;;
-            "prerelease")
-              # Dla pre-release wykonujemy linting
-              RUN_LINT="true"
-              REASON="Pre-release detected, performing lint checks"
-              ;;
-            "feature")
-              # Dla feature branch wykonujemy linting
-              RUN_LINT="true"
-              REASON="Feature branch detected, performing lint checks"
-              ;;
-            *)
-              # W innych przypadkach wykonujemy linting
-              RUN_LINT="true"
-              REASON="Unknown release type, performing lint checks by default"
-              ;;
-          esac
-
-          echo "run_lint=${RUN_LINT}" >> $GITHUB_OUTPUT
-          echo "reason=${REASON}" >> $GITHUB_OUTPUT
-
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-        if: steps.check_inputs.outputs.run_lint == 'true'
 
       - name: ⚡ Cache lint
         uses: actions/cache@v4
@@ -143,7 +112,6 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).lint_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).lint_key }}
-        if: steps.check_inputs.outputs.run_lint == 'true'
 
       - name: ⚡ Cache dependencies
         uses: actions/cache@v4
@@ -153,50 +121,48 @@ jobs:
           key: ${{ fromJSON(inputs.cache_keys).deps_key }}
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
-        if: steps.check_inputs.outputs.run_lint == 'true'
 
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
-        if: steps.check_inputs.outputs.run_lint == 'true'
 
       - name: 📦 Install dependencies
-        if: inputs.install_deps == 'true' && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.install_deps == 'true'
         run: |
           yarn config set network-timeout 300000
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🔍 TypeScript type checking
-        if: inputs.typescript_check == true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.typescript_check == true
         run: yarn lint:typescript:check
 
       - name: 🔍 ESLint
-        if: inputs.eslint_check == true && inputs.fix_issues != true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.eslint_check == true && inputs.fix_issues != true
         run: yarn lint:eslint:check
 
       - name: 🔧 ESLint (with fixes)
-        if: inputs.eslint_check == true && inputs.fix_issues == true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.eslint_check == true && inputs.fix_issues == true
         run: yarn lint:eslint:fix
 
       - name: 🔍 Prettier
-        if: inputs.prettier_check == true && inputs.fix_issues != true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.prettier_check == true && inputs.fix_issues != true
         run: yarn lint:prettier:check
 
       - name: 🔧 Prettier (with fixes)
-        if: inputs.prettier_check == true && inputs.fix_issues == true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.prettier_check == true && inputs.fix_issues == true
         run: yarn lint:prettier:fix
 
       - name: 🔍 Stylelint
-        if: inputs.stylelint_check == true && inputs.fix_issues != true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.stylelint_check == true && inputs.fix_issues != true
         run: yarn lint:style:check
 
       - name: 🔧 Stylelint (with fixes)
-        if: inputs.stylelint_check == true && inputs.fix_issues == true && steps.check_inputs.outputs.run_lint == 'true'
+        if: inputs.stylelint_check == true && inputs.fix_issues == true
         run: yarn lint:style:fix
 
       - name: 📊 Upload lint results
-        if: (failure() || inputs.upload_artifacts == true) && steps.check_inputs.outputs.run_lint == 'true'
+        if: (failure() || inputs.upload_artifacts == true)
         uses: actions/upload-artifact@v4
         with:
           name: lint-results
@@ -215,15 +181,34 @@ jobs:
         id: summary
         run: |
           DETAILS=()
-          if [[ "${{ steps.check_inputs.outputs.run_lint }}" == "true" ]]; then
-            # Wszystkie włączone sprawdzenia
-            [[ "${{ inputs.typescript_check }}" == "true" ]] && DETAILS+=("- TypeScript type checking")
-            [[ "${{ inputs.eslint_check }}" == "true" ]] && DETAILS+=("- ESLint ${{ inputs.fix_issues == 'true' && '(with fixes)' || '' }}")
-            [[ "${{ inputs.prettier_check }}" == "true" ]] && DETAILS+=("- Prettier ${{ inputs.fix_issues == 'true' && '(with fixes)' || '' }}")
-            [[ "${{ inputs.stylelint_check }}" == "true" ]] && DETAILS+=("- Stylelint ${{ inputs.fix_issues == 'true' && '(with fixes)' || '' }}")
-          else
-            # Jeśli pomijamy linting
-            DETAILS+=("- Lint checks skipped: ${{ steps.check_inputs.outputs.reason }}")
+
+          # Dodanie informacji o wykonanych sprawdzeniach
+          if [[ "${{ inputs.typescript_check }}" == "true" ]]; then
+            DETAILS+=("- TypeScript: wykonano sprawdzenie typów")
+          fi
+
+          if [[ "${{ inputs.eslint_check }}" == "true" ]]; then
+            if [[ "${{ inputs.fix_issues }}" == "true" ]]; then
+              DETAILS+=("- ESLint: wykonano sprawdzenie z naprawą błędów")
+            else
+              DETAILS+=("- ESLint: wykonano sprawdzenie")
+            fi
+          fi
+
+          if [[ "${{ inputs.prettier_check }}" == "true" ]]; then
+            if [[ "${{ inputs.fix_issues }}" == "true" ]]; then
+              DETAILS+=("- Prettier: wykonano formatowanie kodu")
+            else
+              DETAILS+=("- Prettier: wykonano sprawdzenie formatowania")
+            fi
+          fi
+
+          if [[ "${{ inputs.stylelint_check }}" == "true" ]]; then
+            if [[ "${{ inputs.fix_issues }}" == "true" ]]; then
+              DETAILS+=("- Stylelint: wykonano sprawdzenie z naprawą błędów")
+            else
+              DETAILS+=("- Stylelint: wykonano sprawdzenie")
+            fi
           fi
 
           # Przygotowanie podsumowania
@@ -233,9 +218,8 @@ jobs:
             --arg fix "${{ inputs.fix_issues }}" \
             --arg node "${{ inputs.node_version }}" \
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-            --arg run_lint "${{ steps.check_inputs.outputs.run_lint }}" \
-            --arg reason "${{ steps.check_inputs.outputs.reason }}" \
-            --arg release_type "${{ inputs.release_type_detected }}" \
+            --arg release_type_detected "${{ inputs.release_type_detected }}" \
+            --arg framework_type "${{ inputs.framework_type }}" \
             --argjson checks "$(printf '%s\n' "${DETAILS[@]}" | jq -R . | jq -s .)" \
             '{
               markdown: {
@@ -243,16 +227,14 @@ jobs:
                 subtitle: $subtitle,
                 details: $checks,
                 fix_status: (if $fix == "true" then "🔧 Wykonano automatyczne poprawki" else "" end),
-                run_status: (if $run_lint == "true" then "✅ Wykonano linting" else "⏭️ Pominięto linting: " + $reason end)
               },
               data: {
                 executed_checks: ($checks | map(sub("- "; "")) | join(",")),
                 fix_applied: ($fix == "true"),
                 node_version: $node,
                 timestamp: $time,
-                run_lint: ($run_lint == "true"),
-                release_type: $release_type,
-                reason: $reason
+                release_type_detected: $release_type_detected,
+                framework_type: $framework_type
               }
             }')
 
@@ -263,18 +245,14 @@ jobs:
             echo "$lint_summary" | jq -r '.markdown.subtitle'
             echo "$lint_summary" | jq -r '.markdown.details[]'
 
-            if [[ "${{ steps.check_inputs.outputs.run_lint }}" == "true" ]]; then
-              if [[ "${{ inputs.fix_issues }}" == "true" ]]; then
-                echo ""
-                echo "$lint_summary" | jq -r '.markdown.fix_status'
-              fi
-            else
-              echo ""
-              echo "$lint_summary" | jq -r '.markdown.run_status'
-            fi
-
             echo ""
             echo "**Release type:** ${{ inputs.release_type_detected }}"
+            echo "**Framework type:** ${{ inputs.framework_type }}"
+
+            if [[ "$lint_summary" | jq -r '.markdown.fix_status' != "" ]]; then
+              echo ""
+              echo "$lint_summary" | jq -r '.markdown.fix_status'
+            fi
           } >> $GITHUB_STEP_SUMMARY
 
           # Export danych do outputs

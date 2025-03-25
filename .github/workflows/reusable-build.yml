@@ -42,6 +42,11 @@ on:
         required: false
         type: string
         default: 'prerelease'
+      framework_type:
+        description: 'Type of framework detected (next, nest, react)'
+        required: false
+        type: string
+        default: 'next'
     outputs:
       build_summary:
         description: 'Summary of build results'
@@ -72,42 +77,10 @@ jobs:
           echo "production_build: ${{ inputs.production_build }}"
           echo "upload_artifacts: ${{ inputs.upload_artifacts }}"
           echo "release_type_detected: ${{ inputs.release_type_detected }}"
-
+          echo "framework_type: ${{ inputs.framework_type }}"
           echo "Parsed cache keys:"
-          echo "build_key: ${{ fromJSON(inputs.cache_keys).build_key }}"
+          echo "nextBuild_key: ${{ fromJSON(inputs.cache_keys).nextBuild_key }}"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
-
-          ANALYZE_BUNDLE="${{ inputs.analyze_bundle }}"
-          PROD_BUILD="${{ inputs.production_build }}"
-          BUILD_CMD="yarn build"
-
-          case "${{ inputs.release_type_detected }}" in
-            "production")
-              PROD_BUILD="true"
-              ANALYZE_BUNDLE="false"
-              BUILD_CMD="yarn build:prod"
-              ;;
-            "preprod")
-              PROD_BUILD="true"
-              ANALYZE_BUNDLE="true"
-              BUILD_CMD="yarn build:prod"
-              ;;
-            "prerelease"|"feature")
-              BUILD_CMD="${{ inputs.production_build == true && 'yarn build:prod' || 'yarn build' }}"
-              ;;
-            *)
-              BUILD_CMD="${{ inputs.production_build == true && 'yarn build:prod' || 'yarn build' }}"
-              ;;
-          esac
-
-          echo "analyze_bundle=${ANALYZE_BUNDLE}" >> $GITHUB_OUTPUT
-          echo "prod_build=${PROD_BUILD}" >> $GITHUB_OUTPUT
-          echo "build_cmd=${BUILD_CMD}" >> $GITHUB_OUTPUT
-
-          echo "Konfiguracja budowania:"
-          echo "analyze_bundle: ${ANALYZE_BUNDLE}"
-          echo "prod_build: ${PROD_BUILD}"
-          echo "build_cmd: ${BUILD_CMD}"
 
       - name: 📝 Checkout
         uses: actions/checkout@v4
@@ -122,14 +95,29 @@ jobs:
           restore-keys: |
             ${{ fromJSON(inputs.cache_keys).deps_key }}
 
-      - name: ⚡ Cache build
+      - name: ⚡ Cache NextBuild
+        if: inputs.framework_type == 'next'
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: |
             ${{ github.workspace }}/.next/
             ${{ github.workspace }}/out/
-          key: ${{ fromJSON(inputs.cache_keys).build_key }}
-          restore-keys: ${{ fromJSON(inputs.cache_keys).build_key }}
+          key: ${{ fromJSON(inputs.cache_keys).nextBuild_key }}
+          restore-keys: |
+            ${{ fromJSON(inputs.cache_keys).nextBuild_key }}
+
+      - name: ⚡ Cache nestBuild
+        if: inputs.framework_type == 'nest'
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: |
+            ${{ github.workspace }}/next.config.js
+            ${{ github.workspace }}/dist/
+          key: ${{ fromJSON(inputs.cache_keys).nestBuild_key }}
+          restore-keys: |
+            ${{ fromJSON(inputs.cache_keys).nestBuild_key }}
 
       - name: 🟢 Setup Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
@@ -143,10 +131,7 @@ jobs:
           yarn install ${{ inputs.install_args }} --prefer-offline --no-scripts
 
       - name: 🏗️ Build application
-        env:
-          NODE_ENV: ${{ steps.check_inputs.outputs.prod_build == 'true' && 'production' || 'development' }}
-          ANALYZE: ${{ steps.check_inputs.outputs.analyze_bundle == 'true' && 'true' || 'false' }}
-        run: ${{ steps.check_inputs.outputs.build_cmd }}
+        run: ${{ inputs.production_build == true && 'yarn build:prod' || 'yarn build' }}
 
       - name: 📊 Upload build artifacts
         if: failure() || inputs.upload_artifacts == true
@@ -154,8 +139,9 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            .next/
-            out/
+            ${{ inputs.framework_type == 'next' && format('{0}/.next/', github.workspace) || '' }}
+            ${{ inputs.framework_type == 'next' && 'out/' || '' }}
+            ${{ inputs.framework_type == 'nest' && format('{0}/dist/', github.workspace) || '' }}
             public/sitemap*.xml
           retention-days: 7
           if-no-files-found: ignore
@@ -169,7 +155,8 @@ jobs:
             --arg env "${{ env.NODE_ENV }}" \
             --arg analyze "${{ env.ANALYZE }}" \
             --arg node "${{ inputs.node_version }}" \
-            --arg release_type "${{ inputs.release_type_detected }}" \
+            --arg release_type_detected "${{ inputs.release_type_detected }}" \
+            --arg framework_type "${{ inputs.framework_type }}" \
             --arg time "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
             --arg duration "$(date +%s)" \
             '{
@@ -179,7 +166,8 @@ jobs:
                   "🔧 Środowisko: " + $env,
                   "📊 Analiza bundle: " + $analyze,
                   "📦 Wersja Node.js: " + $node,
-                  "📌 Typ wydania: " + $release_type
+                  "📌 Typ wydania: " + $release_type_detected,
+                  "📚 Typ frameworku: " + $framework_type
                 ],
                 status: "✅ Budowanie przebiegło pomyślnie"
               },
@@ -187,9 +175,9 @@ jobs:
                 environment: $env,
                 analyze_bundle: ($analyze == "true"),
                 node_version: $node,
-                release_type: $release_type,
+                release_type_detected: $release_type_detected,
+                framework_type: $framework_type,
                 timestamp: $time,
-                production_build: ${{ steps.check_inputs.outputs.prod_build }},
                 duration: $duration
               }
             }')

@@ -3,12 +3,7 @@ name: Release Process
 on:
   workflow_call:
     inputs:
-      dry_run:
-        description: 'Whether to perform a dry run (no actual release)'
-        required: false
-        type: boolean
-        default: false
-      release_type:
+      release_type_detected:
         description: 'Type of release (production, preprod, prerelease, feature)'
         required: true
         type: string
@@ -17,11 +12,6 @@ on:
         required: false
         type: string
         default: 'main'
-      build_command:
-        description: 'Command to build the project before release'
-        required: false
-        type: string
-        default: 'build:package'
       install_args:
         description: 'Arguments for yarn install command'
         required: false
@@ -76,10 +66,8 @@ jobs:
         id: check_inputs
         run: |
           echo "Debugowanie inputów workflow:"
-          echo "dry_run: ${{ inputs.dry_run }}"
-          echo "release_type: ${{ inputs.release_type }}"
+          echo "release_type_detected: ${{ inputs.release_type_detected }}"
           echo "release_branch: ${{ inputs.release_branch }}"
-          echo "build_command: ${{ inputs.build_command }}"
           echo "install_args: ${{ inputs.install_args }}"
           echo "node_version: ${{ inputs.node_version }}"
           echo "install_deps: ${{ inputs.install_deps }}"
@@ -88,7 +76,7 @@ jobs:
 
           echo "Parsed cache keys:"
           echo "deps_key: ${{ fromJSON(inputs.cache_keys).deps_key }}"
-          echo "build_key: ${{ fromJSON(inputs.cache_keys).build_key }}"
+          echo "nextBuild_key: ${{ fromJSON(inputs.cache_keys).nextBuild_key }}"
 
           echo "Secrets status:"
           echo "GH_TOKEN: ${{ secrets.GH_TOKEN != '' }}"
@@ -99,15 +87,15 @@ jobs:
           DO_RELEASE="true"
           REASON=""
 
-          if [[ "${{ inputs.release_type }}" == "production" ]]; then
+          if [[ "${{ inputs.release_type_detected }}" == "production" ]]; then
             # Dla produkcyjnych releasów zawsze wykonujemy
             DO_RELEASE="true"
             REASON="Production release"
-          elif [[ "${{ inputs.release_type }}" == "preprod" ]]; then
+          elif [[ "${{ inputs.release_type_detected }}" == "preprod" ]]; then
             # Dla pre-produkcyjnych releasów (PR do main/master) zawsze wykonujemy
             DO_RELEASE="true"
             REASON="Pre-production release (PR to main/master)"
-          elif [[ "${{ inputs.release_type }}" == "prerelease" || "${{ inputs.release_type }}" == "feature" ]]; then
+          elif [[ "${{ inputs.release_type_detected }}" == "prerelease" || "${{ inputs.release_type_detected }}" == "feature" ]]; then
             # Dla pre-release wykonujemy tylko jeśli poprzednie kroki były OK
             if [[ "${{ inputs.lint_result }}" == "success" && "${{ inputs.tests_result }}" == "success" ]]; then
               DO_RELEASE="true"
@@ -131,8 +119,7 @@ jobs:
           echo "=== 🔬 Szczegółowe debugowanie wszystkich zmiennych 🔬 ==="
 
           echo "=== 📋 Inputs dokładnie ==="
-          echo "dry_run: '${{ inputs.dry_run }}' (type: $([ "${{ inputs.dry_run }}" == "true" ] && echo "boolean:true" || echo "boolean:false"))"
-          echo "release_type: '${{ inputs.release_type }}'"
+          echo "release_type_detected: '${{ inputs.release_type_detected }}'"
 
           echo "=== 🔄 GitHub Context ==="
           echo "github.ref: '${{ github.ref }}'"
@@ -146,8 +133,20 @@ jobs:
           fi
 
           echo "=== 🧪 Tests & Lint Results ==="
-          echo "lint_result: '${{ inputs.lint_result }}' (success: $([ "${{ inputs.lint_result }}" == "success" ] && echo "true" || echo "false"))"
-          echo "tests_result: '${{ inputs.tests_result }}' (success: $([ "${{ inputs.tests_result }}" == "success" ] && echo "true" || echo "false"))"
+          if [[ "${{ inputs.lint_result }}" == "success" ]]; then
+            LINT_SUCCESS="true"
+          else
+            LINT_SUCCESS="false"
+          fi
+
+          if [[ "${{ inputs.tests_result }}" == "success" ]]; then
+            TESTS_SUCCESS="true"
+          else
+            TESTS_SUCCESS="false"
+          fi
+
+          echo "lint_result: '${{ inputs.lint_result }}' (success: ${LINT_SUCCESS})"
+          echo "tests_result: '${{ inputs.tests_result }}' (success: ${TESTS_SUCCESS})"
 
           echo "=== 🏷️ Calculated Variables ==="
           echo "DO_RELEASE: '${{ steps.check_inputs.outputs.do_release }}'"
@@ -173,8 +172,7 @@ jobs:
             echo "#### Release Configuration"
             echo "| Variable | Value | Type |"
             echo "| --- | --- | --- |"
-            echo "| dry_run | ${{ inputs.dry_run }} | boolean |"
-            echo "| release_type | ${{ inputs.release_type }} | string |"
+            echo "| release_type_detected | ${{ inputs.release_type_detected }} | string |"
             echo ""
             echo "#### Context Information"
             echo "| Variable | Value |"
@@ -220,7 +218,7 @@ jobs:
 
       - name: '🔍 Check next release version'
         id: next-version
-        if: inputs.dry_run == 'true' && steps.check_inputs.outputs.do_release == 'true'
+        if: steps.check_inputs.outputs.do_release == 'true'
         run: |
           NEXT_VERSION=$(npx semantic-release --dry-run | grep "next release version is" -i | sed 's/.*is //')
           echo "Next version will be: $NEXT_VERSION"
@@ -229,16 +227,21 @@ jobs:
       - name: '🗑️ Clean specific tag if exists'
         if: steps.next-version.outputs.version != ''
         run: |
-          echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
-          git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
-          git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
+          echo "Checking for tag v${{ steps.next-version.outputs.version }}"
+          if git rev-parse "v${{ steps.next-version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Cleaning tag v${{ steps.next-version.outputs.version }}"
+            git tag -d "v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
+            git push origin ":refs/tags/v${{ steps.next-version.outputs.version }}" 2>/dev/null || true
+          else
+            echo "Tag v${{ steps.next-version.outputs.version }} doesn't exist, skipping cleanup"
+          fi
 
       - name: 🏗️ Build project
         if: steps.check_inputs.outputs.do_release == 'true'
-        run: yarn ${{ inputs.build_command }}
+        run: yarn build:package
 
       - name: 🚀 Release
-        if: inputs.dry_run != true && steps.check_inputs.outputs.do_release == 'true'
+        if: steps.check_inputs.outputs.do_release == 'true'
         run: |
           # Sprawdź dostępność NPM_TOKEN
           if [[ -n "$NPM_TOKEN" ]]; then
@@ -248,7 +251,7 @@ jobs:
           fi
 
           # Wybierz typ release'u
-          case "${{ inputs.release_type }}" in
+          case "${{ inputs.release_type_detected }}" in
             "feature")
               echo "Using feature release type"
               # Wyciągnij nazwę funkcji z nazwy gałęzi
@@ -277,7 +280,11 @@ jobs:
         if: always()
         run: |
           # Określ tryb (dry-run lub rzeczywisty)
-          MODE="${{ inputs.dry_run && '(DRY RUN)' || '(ACTUAL RELEASE)' }}"
+          if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
+            MODE="(ACTUAL RELEASE)"
+          else
+            MODE="(DRY RUN)"
+          fi
 
           # Określ status (wykonano lub pominięto)
           if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
@@ -288,11 +295,10 @@ jobs:
 
           echo "### Release Status Summary 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Type:** ${{ inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** ${{ inputs.release_type_detected }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode:** ${MODE}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** ${EXEC_STATUS}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ inputs.release_branch }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build command:** ${{ inputs.build_command }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Node version:** ${{ inputs.node_version }}" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ steps.check_inputs.outputs.do_release }}" == "true" ]]; then
@@ -303,7 +309,7 @@ jobs:
               fi
 
               # Dodatkowe informacje o typie wydania
-              case "${{ inputs.release_type }}" in
+              case "${{ inputs.release_type_detected }}" in
                 "feature")
                   FEATURE_NAME=$(echo "${{ inputs.release_branch }}" | sed -E 's/feature\///')
                   echo "- **Tag suffix:** feat-${FEATURE_NAME}" >> $GITHUB_STEP_SUMMARY
