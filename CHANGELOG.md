@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.1.1...v1.1.2) (March 25, 2025)
+
+
+### Other tasks
+
+- 🐛 repair actions ([9c8f8e7](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/9c8f8e713cc598965c0ae3873e2e396c624ed692))
+
 ## [1.1.1](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.1.0...v1.1.1) (March 25, 2025)
 
 
