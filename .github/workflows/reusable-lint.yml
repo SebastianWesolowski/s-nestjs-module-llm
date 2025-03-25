@@ -249,9 +249,11 @@ jobs:
             echo "**Release type:** ${{ inputs.release_type_detected }}"
             echo "**Framework type:** ${{ inputs.framework_type }}"
 
-            if [[ "$lint_summary" | jq -r '.markdown.fix_status' != "" ]]; then
+            # Sprawdzenie czy jest status fix, bezpieczniejszy sposób
+            FIX_STATUS=$(echo "$lint_summary" | jq -r '.markdown.fix_status')
+            if [[ "$FIX_STATUS" != "" ]]; then
               echo ""
-              echo "$lint_summary" | jq -r '.markdown.fix_status'
+              echo "$FIX_STATUS"
             fi
           } >> $GITHUB_STEP_SUMMARY
 
