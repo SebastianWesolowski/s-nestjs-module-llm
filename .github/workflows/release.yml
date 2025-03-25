@@ -22,16 +22,10 @@ on:
         default: true
         required: false
       release_type:
-        description: 'Typ wydania paczki'
-        type: choice
+        description: 'Typ wydania paczki (auto/production/preprod/prerelease/feature)'
+        type: string
         required: false
         default: 'auto'
-        options:
-          - 'auto' # Automatyczne wykrywanie na podstawie gałęzi
-          - 'production' # Wydanie produkcyjne (X.Y.Z)
-          - 'preprod' # Wydanie przed-produkcyjne (X.Y.Z-rc.N)
-          - 'prerelease' # Wydanie przed-wydaniowe (X.Y.Z-beta.N)
-          - 'feature' # Wydanie funkcjonalności (X.Y.Z-feat-nazwa.N)
       build_command:
         description: 'Custom build command'
         type: string

@@ -18,16 +18,10 @@ on:
         required: true
         type: string
       release_type:
-        description: 'Typ wydania paczki'
+        description: 'Typ wydania paczki (auto/production/preprod/prerelease/feature)'
         required: false
-        type: choice
+        type: string
         default: 'auto'
-        options:
-          - 'auto' # Automatyczne wykrywanie na podstawie gałęzi
-          - 'production' # Wydanie produkcyjne (X.Y.Z)
-          - 'preprod' # Wydanie przed-produkcyjne (X.Y.Z-rc.N)
-          - 'prerelease' # Wydanie przed-wydaniowe (X.Y.Z-beta.N)
-          - 'feature' # Wydanie funkcjonalności (X.Y.Z-feat-nazwa.N)
     outputs:
       node_version:
         description: 'The Node.js version being used'
