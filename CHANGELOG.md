@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.1.0...v1.1.1) (March 25, 2025)
+
+
+### Other tasks
+
+- 🐛 new actions ([dcdc77a](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/dcdc77ad58b4536dbce7d95e171c85885088cc00))
+
 ## [1.1.0](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0...v1.1.0) (March 25, 2025)
 
 
