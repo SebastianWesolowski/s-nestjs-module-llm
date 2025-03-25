@@ -1,3 +1,11 @@
+## [1.1.0](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0...v1.1.0) (March 25, 2025)
+
+
+### Other tasks
+
+- 🐛 remove choice type ([9acba53](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/9acba53cbb16f86f7b2ca92d152cf2e91499fc1c))
+- ✨ new GH flow ([4dcfbe3](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/4dcfbe35fcd356533530bbebf9ca8abdbe8a70e8))
+
 ## 1.0.0 (March 24, 2025)
 
 
