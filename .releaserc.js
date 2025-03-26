@@ -58,8 +58,8 @@ module.exports = {
     },
     {
       name: 'feature/*',
-      channel: 'feature',
-      prerelease: 'feature',
+      channel: ({ name }) => `feature-${name.replace('feature/', '')}`,
+      prerelease: ({ name }) => `feature-${name.replace('feature/', '')}`,
     },
   ],
   plugins: [
