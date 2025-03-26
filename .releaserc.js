@@ -58,8 +58,9 @@ module.exports = {
     },
     {
       name: 'feature/*',
-      channel: ({ name }) => `feature-${name.split('/')[1]}`,
-      prerelease: ({ name }) => `feature-${name.split('/')[1]}`,
+      channel: 'feature',
+      prerelease: true,
+      pattern: 'feature/*',
     },
   ],
   plugins: [
@@ -192,14 +193,21 @@ module.exports = {
               'alfa',
               'beta',
               'rc',
-              { pattern: 'feature/*', source: 'feature' },
+              {
+                name: 'feature/*',
+                prerelease: true,
+                pattern: 'feature/*',
+              },
             ],
             successComment: (_, context) => {
               const branch = context.branch.name;
               const branchType = getBranchType(branch);
               const version = context.nextRelease.version;
+              const featureMatch = branch.match(/feature\/(.*)/);
 
               switch (branchType) {
+                case 'feature':
+                  return `🧩 Wydanie funkcjonalne ${version} (${featureMatch ? featureMatch[1] : ''}) zostało opublikowane!`;
                 case 'production':
                   return `🚀 Wydanie produkcyjne ${version} zostało opublikowane!`;
                 case 'dev':
@@ -210,8 +218,6 @@ module.exports = {
                   return `🔍 Wydanie beta ${version} zostało opublikowane!`;
                 case 'rc':
                   return `🏁 Wydanie kandydackie (RC) ${version} zostało opublikowane!`;
-                case 'feature':
-                  return `🧩 Wydanie funkcjonalne ${version} zostało opublikowane!`;
                 default:
                   return `📦 Wydanie ${version} zostało opublikowane!`;
               }
@@ -219,7 +225,13 @@ module.exports = {
             failTitle: 'Proces wydania nie powiódł się 🚨',
             labels: ['release'],
             releasedLabels: (_, context) => {
-              const branchType = getBranchType(context.branch.name);
+              const branch = context.branch.name;
+              const branchType = getBranchType(branch);
+              const featureMatch = branch.match(/feature\/(.*)/);
+
+              if (branchType === 'feature' && featureMatch) {
+                return ['released', `release:feature`, `feature:${featureMatch[1]}`];
+              }
               return ['released', `release:${branchType}`];
             },
             assets: (_, context) => {
@@ -254,9 +266,12 @@ module.exports = {
         tarballDir: 'dist',
         npmPublishArgs: [
           (branch) => {
-            const branchType = getBranchType(branch || process.env.GITHUB_REF_NAME);
-            const tag = branchType === 'production' ? 'latest' : branchType;
-            return `--tag ${tag}`;
+            const branchName = branch || process.env.GITHUB_REF_NAME;
+            if (branchName.startsWith('feature/')) {
+              return `--tag feature-${branchName.replace('feature/', '')}`;
+            }
+            const branchType = getBranchType(branchName);
+            return `--tag ${branchType === 'production' ? 'latest' : branchType}`;
           },
         ],
       },
