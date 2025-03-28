@@ -59,7 +59,7 @@ module.exports = {
     {
       name: 'feature/*',
       channel: 'feature',
-      prerelease: true,
+      prerelease: 'feature-${name.replace(/^feature\//g, "")}',
     },
   ],
   plugins: [
