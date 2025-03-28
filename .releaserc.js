@@ -1,13 +1,6 @@
 // Minimum configuration
 module.exports = {
-  branches: [
-    'main',
-    'master',
-    { name: 'develop', prerelease: 'dev' },
-    // Wszystkie gałęzie feature używają tego samego identyfikatora
-    // UWAGA: Nowe wersje będą nadpisywać stare
-    { name: 'feature/*', prerelease: 'experimental' },
-  ],
+  branches: ['main', 'master', { name: 'develop', prerelease: 'dev' }, { name: 'feature/*', prerelease: true }],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
