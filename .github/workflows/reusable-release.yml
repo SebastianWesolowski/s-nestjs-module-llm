@@ -235,7 +235,7 @@ jobs:
             echo "Publishing to GitHub only..."
           fi
 
-          yarn release
+          npx semantic-release --debug
 
       - name: 📋 Post Release Status
         if: always()
