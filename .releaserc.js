@@ -3,9 +3,10 @@ module.exports = {
   branches: [
     'main',
     'master',
-    { name: 'dev', prerelease: 'dev' },
     { name: 'develop', prerelease: 'dev' },
-    { name: 'feature/*', prerelease: 'feature' },
+    // Wszystkie gałęzie feature używają tego samego identyfikatora
+    // UWAGA: Nowe wersje będą nadpisywać stare
+    { name: 'feature/*', prerelease: 'experimental' },
   ],
   plugins: [
     '@semantic-release/commit-analyzer',
