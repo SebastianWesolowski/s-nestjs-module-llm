@@ -1,5 +1,6 @@
 const helpers = require('handlebars-helpers')();
 const { execSync } = require('child_process');
+const generateVersion = require('./tools/generate-version.js');
 
 // Funkcja do pobierania hasha commita
 const getCommitHash = () => {
@@ -59,10 +60,7 @@ module.exports = {
     {
       name: 'feature/*',
       channel: 'feature',
-      prerelease: ({ name }) => {
-        const hash = getCommitHash();
-        return `feature-${hash}`;
-      },
+      prerelease: 'feature',
     },
   ],
   plugins: [
@@ -183,64 +181,12 @@ module.exports = {
         changelogFile: 'CHANGELOG.md',
       },
     ],
-    ...(process.env.CI
-      ? [
-          '@semantic-release/github',
-          {
-            branches: [
-              'main',
-              'master',
-              'dev',
-              'develop',
-              'alfa',
-              'beta',
-              'rc',
-              { pattern: 'feature/*', source: 'feature' },
-            ],
-            successComment: (_, context) => {
-              const branch = context.branch.name;
-              const branchType = getBranchType(branch);
-              const version = context.nextRelease.version;
 
-              switch (branchType) {
-                case 'production':
-                  return `🚀 Wydanie produkcyjne ${version} zostało opublikowane!`;
-                case 'dev':
-                  return `⚙️ Wydanie deweloperskie ${version} zostało opublikowane!`;
-                case 'alfa':
-                  return `🧪 Wydanie alfa ${version} zostało opublikowane!`;
-                case 'beta':
-                  return `🔍 Wydanie beta ${version} zostało opublikowane!`;
-                case 'rc':
-                  return `🏁 Wydanie kandydackie (RC) ${version} zostało opublikowane!`;
-                case 'feature':
-                  return `🧩 Wydanie funkcjonalne ${version} zostało opublikowane!`;
-                default:
-                  return `📦 Wydanie ${version} zostało opublikowane!`;
-              }
-            },
-            failTitle: 'Proces wydania nie powiódł się 🚨',
-            labels: ['release'],
-            releasedLabels: (_, context) => {
-              const branchType = getBranchType(context.branch.name);
-              return ['released', `release:${branchType}`];
-            },
-            assets: (_, context) => {
-              const baseAssets = ['dist/*.tgz'];
-              // Dla produkcyjnych wydań dodaj więcej assetów
-              if (getBranchType(context.branch.name) === 'production') {
-                return [...baseAssets, 'CHANGELOG.md', 'LICENSE'];
-              }
-              return baseAssets;
-            },
-          },
-        ]
-      : []),
     [
       '@semantic-release/git',
       {
         assets: ['CHANGELOG.md'],
-        message: 'release: 📦 ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+        message: `release: 📦 \${nextRelease.version} [skip ci]\n\n\${nextRelease.notes}`,
       },
     ],
     [
@@ -262,7 +208,40 @@ module.exports = {
             return `--tag ${tag}`;
           },
         ],
+        version: generateVersion,
       },
     ],
+    ...(process.env.CI
+      ? [
+          '@semantic-release/github',
+          {
+            branches: [
+              'main',
+              'master',
+              'dev',
+              'develop',
+              'alfa',
+              'beta',
+              'rc',
+              { pattern: 'feature/*', source: 'feature' },
+            ],
+            successComment: 'ok',
+            failTitle: 'Proces wydania nie powiódł się 🚨',
+            labels: ['release'],
+            releasedLabels: (_, context) => {
+              const branchType = getBranchType(context.branch.name);
+              return ['released', `release:${branchType}`];
+            },
+            assets: (_, context) => {
+              const baseAssets = ['dist/*.tgz'];
+              // Dla produkcyjnych wydań dodaj więcej assetów
+              if (getBranchType(context.branch.name) === 'production') {
+                return [...baseAssets, 'CHANGELOG.md', 'LICENSE'];
+              }
+              return baseAssets;
+            },
+          },
+        ]
+      : []),
   ],
 };
