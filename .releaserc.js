@@ -6,6 +6,10 @@ module.exports = {
       name: 'dev',
       prerelease: true,
     },
+    {
+      name: 'feature/*',
+      prerelease: '${name.replace(/^feature\\//, "")}',
+    },
   ],
   plugins: [
     [

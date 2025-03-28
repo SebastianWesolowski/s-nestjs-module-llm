@@ -241,7 +241,8 @@ jobs:
               echo "Using feature release type"
               # Wyciągnij nazwę funkcji z nazwy gałęzi
               FEATURE_NAME=$(echo "${{ inputs.release_branch }}" | sed -E 's/feature\///')
-              npx semantic-release --prerelease "feat-${FEATURE_NAME}"
+              echo "Feature name: ${FEATURE_NAME}"
+              npx semantic-release --branches ${{ inputs.release_branch }}
               ;;
             "preprod")
               echo "Using pre-production release type (preprod)"
