@@ -59,7 +59,7 @@ module.exports = {
     {
       name: 'feature/*',
       channel: 'feature',
-      prerelease: 'feature',
+      prerelease: true,
     },
   ],
   plugins: [
