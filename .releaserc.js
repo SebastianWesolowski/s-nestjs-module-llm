@@ -1,6 +1,6 @@
 // Minimum configuration
 module.exports = {
-  branches: ['main', 'master', { name: 'develop', prerelease: 'dev' }, { name: 'feature/*', prerelease: true }],
+  branches: ['main', 'master', { name: 'develop', prerelease: 'dev' }, { name: 'feature/*', prerelease: 'true' }],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
