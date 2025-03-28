@@ -59,11 +59,7 @@ module.exports = {
     {
       name: 'feature/*',
       channel: 'feature',
-      prerelease: (name) => {
-        const featureName = name.replace(/^feature\//, '');
-        const hash = getCommitHash();
-        return `feature.${featureName}.${hash}`;
-      },
+      prerelease: 'feature',
     },
   ],
   plugins: [
