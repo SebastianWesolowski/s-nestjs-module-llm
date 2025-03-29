@@ -1,28 +1,8 @@
 const helpers = require('handlebars-helpers')();
-const { execSync } = require('child_process');
 
-// Funkcja do pobierania hasha commita
-const getCommitHash = () => {
-  try {
-    return execSync('git rev-parse --short HEAD').toString().trim();
-  } catch (e) {
-    return 'unknown';
-  }
-};
-
-// Funkcja do określania typu brancha
-const getBranchType = (branch) => {
-  if (!branch) return 'unknown';
-
-  if (branch === 'main' || branch === 'master') return 'production';
-  if (branch === 'dev' || branch === 'develop') return 'dev';
-  if (branch.startsWith('feature/')) return 'feature';
-
-  return branch; // Dla innych przypadków zwracamy nazwę brancha
-};
-
-module.exports = {
-  branches: [
+// Function to generate branches configuration dynamically
+const getBranchesConfig = () => {
+  const branches = [
     {
       name: 'main',
       channel: 'latest',
@@ -56,16 +36,39 @@ module.exports = {
       channel: 'rc',
       prerelease: 'rc',
     },
-    {
-      name: 'feature/*',
+  ];
+
+  // Check if we're on a feature branch
+  const currentBranch = process.env.GITHUB_REF_NAME || '';
+  if (currentBranch.startsWith('feature/')) {
+    const featureName = currentBranch.replace('feature/', '');
+    // Get shortened commit hash from environment
+    const shortHash = process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : '';
+    branches.push({
+      name: currentBranch,
       channel: 'feature',
-      prerelease: (name) => {
-        const featureName = name.replace(/^feature\//, '');
-        const hash = getCommitHash();
-        return `feature.${featureName}.${hash}`;
-      },
-    },
-  ],
+      prerelease: `${featureName}-${shortHash}`,
+    });
+  }
+
+  // Handle pull request to main/master for rc version
+  const isPR = process.env.GITHUB_EVENT_NAME === 'pull_request';
+  const targetBranch = process.env.GITHUB_BASE_REF || '';
+  if (isPR && (targetBranch === 'main' || targetBranch === 'master')) {
+    const prNumber = process.env.GITHUB_HEAD_REF ? process.env.GITHUB_HEAD_REF.replace(/\D/g, '') : '';
+    const shortHash = process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : '';
+    branches.push({
+      name: process.env.GITHUB_HEAD_REF,
+      channel: 'rc',
+      prerelease: `rc-pr${prNumber}-${shortHash}`,
+    });
+  }
+
+  return branches;
+};
+
+module.exports = {
+  branches: getBranchesConfig(),
   plugins: [
     [
       '@semantic-release/commit-analyzer',
@@ -116,51 +119,50 @@ module.exports = {
             return (a.title || '').localeCompare(b.title || '');
           },
           transform: (commit, context) => {
-            if (process.env.SKIP_TRANSFORM === 'true') {
-              return commit;
-            }
-
-            const modifiedCommit = { ...commit };
+            // Stwórz kopię obiektu commit zamiast modyfikować go bezpośrednio
+            const result = { ...commit };
 
             if (commit.type === 'feat') {
-              modifiedCommit.type = 'Features';
+              result.type = 'Features';
             } else if (commit.type === 'fix') {
-              modifiedCommit.type = 'Bug Fixes';
+              result.type = 'Bug Fixes';
             } else if (commit.type === 'build') {
-              modifiedCommit.type = 'Dependencies and Other Build Updates';
+              result.type = 'Dependencies and Other Build Updates';
             } else if (commit.type === null || !commit.type || commit.type === 'chore') {
-              modifiedCommit.type = 'Other tasks';
+              result.type = 'Other tasks';
             }
 
             if (typeof commit.hash === 'string') {
-              modifiedCommit.shortHash = commit.hash.substring(0, 7);
+              result.shortHash = commit.hash.substring(0, 7);
             }
 
             if (typeof commit.subject === 'string' || commit.subject === null) {
               let url = context.repository ? `${context.host}/${context.owner}/${context.repository}` : context.repoUrl;
 
+              // Extract SC issue number
               if (commit.message && commit.subject === null) {
-                modifiedCommit.subject = commit.message;
+                result.subject = commit.message;
               }
 
               const scMatch = commit.subject ? commit.subject.match(/\[?(SC-\d+)\]?/) : null;
               if (scMatch) {
                 const scIssue = scMatch[1];
-                modifiedCommit.scIssue = scIssue;
-                modifiedCommit.subject = commit.subject.replace(
+                result.scIssue = scIssue;
+                // Replace SC issue with linked version
+                result.subject = commit.subject.replace(
                   /\[?(SC-\d+)\]?/,
                   `[[${scIssue}](https://linear.app/wesolowskidev/issue/${scIssue})]`
                 );
               } else {
-                modifiedCommit.scIssue = 'Other tasks';
+                result.scIssue = 'Other tasks';
               }
 
               if (url) {
-                modifiedCommit.commitUrl = `${url}/commit/${commit.hash}`;
+                result.commitUrl = `${url}/commit/${commit.hash}`;
               }
             }
 
-            return modifiedCommit;
+            return result;
           },
           commitPartial: '- {{subject}} ([{{shortHash}}]({{commitUrl}}))\n',
           mainTemplate: `{{> header}}
@@ -184,59 +186,12 @@ module.exports = {
         changelogFile: 'CHANGELOG.md',
       },
     ],
-    ...(process.env.CI
-      ? [
-          '@semantic-release/github',
-          {
-            branches: [
-              'main',
-              'master',
-              'dev',
-              'develop',
-              'alfa',
-              'beta',
-              'rc',
-              { pattern: 'feature/*', source: 'feature' },
-            ],
-            successComment: (_, context) => {
-              const branch = context.branch.name;
-              const branchType = getBranchType(branch);
-              const version = context.nextRelease.version;
-
-              switch (branchType) {
-                case 'production':
-                  return `🚀 Wydanie produkcyjne ${version} zostało opublikowane!`;
-                case 'dev':
-                  return `⚙️ Wydanie deweloperskie ${version} zostało opublikowane!`;
-                case 'alfa':
-                  return `🧪 Wydanie alfa ${version} zostało opublikowane!`;
-                case 'beta':
-                  return `🔍 Wydanie beta ${version} zostało opublikowane!`;
-                case 'rc':
-                  return `🏁 Wydanie kandydackie (RC) ${version} zostało opublikowane!`;
-                case 'feature':
-                  return `🧩 Wydanie funkcjonalne ${version} zostało opublikowane!`;
-                default:
-                  return `📦 Wydanie ${version} zostało opublikowane!`;
-              }
-            },
-            failTitle: 'Proces wydania nie powiódł się 🚨',
-            labels: ['release'],
-            releasedLabels: (_, context) => {
-              const branchType = getBranchType(context.branch.name);
-              return ['released', `release:${branchType}`];
-            },
-            assets: (_, context) => {
-              const baseAssets = ['dist/*.tgz'];
-              // Dla produkcyjnych wydań dodaj więcej assetów
-              if (getBranchType(context.branch.name) === 'production') {
-                return [...baseAssets, 'CHANGELOG.md', 'LICENSE'];
-              }
-              return baseAssets;
-            },
-          },
-        ]
-      : []),
+    [
+      '@semantic-release/github',
+      {
+        branches: ['main'],
+      },
+    ],
     [
       '@semantic-release/git',
       {
@@ -247,23 +202,9 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'echo "Preparing release for ${process.env.GITHUB_REF_NAME}" && yarn build:prod',
+        prepareCmd: 'echo "Preparing release" && yarn build:prod',
       },
     ],
-    [
-      '@semantic-release/npm',
-      {
-        npmPublish: true,
-        pkgRoot: '.',
-        tarballDir: 'dist',
-        npmPublishArgs: [
-          (branch) => {
-            const branchType = getBranchType(branch || process.env.GITHUB_REF_NAME);
-            const tag = branchType === 'production' ? 'latest' : branchType;
-            return `--tag ${tag}`;
-          },
-        ],
-      },
-    ],
+    ['@semantic-release/npm', { npmPublish: false }],
   ],
 };

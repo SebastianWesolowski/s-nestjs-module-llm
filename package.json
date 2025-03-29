@@ -138,7 +138,7 @@
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.5.3",
-    "s-nestjs-module-llm": "^1.1.0",
+    "s-prettier": "^1.1.0",
     "s-update-manager": "^1.0.0-dev.48",
     "semantic-release": "^24.2.2",
     "source-map-support": "^0.5.21",
