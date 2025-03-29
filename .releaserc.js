@@ -3,10 +3,14 @@ const helpers = require('handlebars-helpers')();
 // Function to generate branches configuration dynamically
 const getBranchesConfig = () => {
   const branches = [
-    'main',
+    {
+      name: 'main',
+      channel: 'latest',
+    },
     {
       name: 'dev',
-      prerelease: true,
+      channel: 'dev',
+      prerelease: 'dev',
     },
   ];
 
@@ -18,6 +22,7 @@ const getBranchesConfig = () => {
     const shortHash = process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : '';
     branches.push({
       name: currentBranch,
+      channel: 'feature',
       prerelease: `${featureName}-${shortHash}`,
     });
   }
