@@ -14,9 +14,11 @@ const getBranchesConfig = () => {
   const currentBranch = process.env.GITHUB_REF_NAME || '';
   if (currentBranch.startsWith('feature/')) {
     const featureName = currentBranch.replace('feature/', '');
+    // Get shortened commit hash from environment
+    const shortHash = process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : '';
     branches.push({
       name: currentBranch,
-      prerelease: featureName,
+      prerelease: `${featureName}-${shortHash}`,
     });
   }
 
