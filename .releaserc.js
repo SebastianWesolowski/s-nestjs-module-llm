@@ -1,16 +1,30 @@
 const helpers = require('handlebars-helpers')();
-module.exports = {
-  branches: [
+
+// Function to generate branches configuration dynamically
+const getBranchesConfig = () => {
+  const branches = [
     'main',
     {
       name: 'dev',
       prerelease: true,
     },
-    {
-      name: 'feature/*',
-      prerelease: '${name.replace(/^feature\\//, "")}',
-    },
-  ],
+  ];
+
+  // Check if we're on a feature branch
+  const currentBranch = process.env.GITHUB_REF_NAME || '';
+  if (currentBranch.startsWith('feature/')) {
+    const featureName = currentBranch.replace('feature/', '');
+    branches.push({
+      name: currentBranch,
+      prerelease: featureName,
+    });
+  }
+
+  return branches;
+};
+
+module.exports = {
+  branches: getBranchesConfig(),
   plugins: [
     [
       '@semantic-release/commit-analyzer',

@@ -235,6 +235,10 @@ jobs:
             echo "Publishing to GitHub only..."
           fi
 
+          # Export branch name for semantic-release
+          export GITHUB_REF_NAME="${{ inputs.release_branch }}"
+          echo "Using branch: $GITHUB_REF_NAME"
+
           # Wybierz typ release'u
           case "${{ inputs.release_type_detected }}" in
             "feature")
@@ -242,7 +246,7 @@ jobs:
               # Wyciągnij nazwę funkcji z nazwy gałęzi
               FEATURE_NAME=$(echo "${{ inputs.release_branch }}" | sed -E 's/feature\///')
               echo "Feature name: ${FEATURE_NAME}"
-              npx semantic-release --branches ${{ inputs.release_branch }}
+              npx semantic-release
               ;;
             "preprod")
               echo "Using pre-production release type (preprod)"
