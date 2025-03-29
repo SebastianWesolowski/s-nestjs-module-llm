@@ -8,9 +8,33 @@ const getBranchesConfig = () => {
       channel: 'latest',
     },
     {
+      name: 'master',
+      channel: 'latest',
+    },
+    {
       name: 'dev',
       channel: 'dev',
       prerelease: 'dev',
+    },
+    {
+      name: 'develop',
+      channel: 'dev',
+      prerelease: 'dev',
+    },
+    {
+      name: 'alfa',
+      channel: 'alfa',
+      prerelease: 'alfa',
+    },
+    {
+      name: 'beta',
+      channel: 'beta',
+      prerelease: 'beta',
+    },
+    {
+      name: 'rc',
+      channel: 'rc',
+      prerelease: 'rc',
     },
   ];
 
