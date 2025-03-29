@@ -51,6 +51,19 @@ const getBranchesConfig = () => {
     });
   }
 
+  // Handle pull request to main/master for rc version
+  const isPR = process.env.GITHUB_EVENT_NAME === 'pull_request';
+  const targetBranch = process.env.GITHUB_BASE_REF || '';
+  if (isPR && (targetBranch === 'main' || targetBranch === 'master')) {
+    const prNumber = process.env.GITHUB_HEAD_REF ? process.env.GITHUB_HEAD_REF.replace(/\D/g, '') : '';
+    const shortHash = process.env.GITHUB_SHA ? process.env.GITHUB_SHA.substring(0, 7) : '';
+    branches.push({
+      name: process.env.GITHUB_HEAD_REF,
+      channel: 'rc',
+      prerelease: `rc-pr${prNumber}-${shortHash}`,
+    });
+  }
+
   return branches;
 };
 

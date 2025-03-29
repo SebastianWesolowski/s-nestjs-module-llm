@@ -239,6 +239,14 @@ jobs:
           export GITHUB_REF_NAME="${{ inputs.release_branch }}"
           echo "Using branch: $GITHUB_REF_NAME"
 
+          # Export PR-related environment variables if available
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            export GITHUB_EVENT_NAME="pull_request"
+            export GITHUB_BASE_REF="${{ github.base_ref }}"
+            export GITHUB_HEAD_REF="${{ github.head_ref }}"
+            echo "Pull request: $GITHUB_HEAD_REF -> $GITHUB_BASE_REF"
+          fi
+
           # Wybierz typ release'u
           case "${{ inputs.release_type_detected }}" in
             "feature")
@@ -256,13 +264,23 @@ jobs:
               echo "Using pre-release type (beta)"
               npx semantic-release --prerelease beta
               ;;
+            "rc")
+              echo "Using release candidate type (rc)"
+              npx semantic-release --prerelease rc
+              ;;
             "production")
               echo "Using production release type"
               npx semantic-release
               ;;
             *)
-              echo "Using default release type"
-              npx semantic-release
+              # Check if it's a PR to main/master
+              if [[ "${{ github.event_name }}" == "pull_request" && ("${{ github.base_ref }}" == "main" || "${{ github.base_ref }}" == "master") ]]; then
+                echo "Detected PR to main/master, using RC release type"
+                npx semantic-release --prerelease rc
+              else
+                echo "Using default release type"
+                npx semantic-release
+              fi
               ;;
           esac
 
