@@ -1,6 +1,6 @@
-# {{PLACEHOLDER_REPO_NAME}}
+# s-nestjs-module-llm
 
-<a href="https://github.com/SebastianWesolowski/starter-npm-package"><img align="left" width="440" height="180" alt="{{PLACEHOLDER_REPO_NAME}} package" src=".github/assets/heroImageReposytory-nest.png"></a>
+<a href="https://github.com/SebastianWesolowski/starter-npm-package"><img align="left" width="440" height="180" alt="s-nestjs-module-llm package" src=".github/assets/heroImageReposytory-nest.png"></a>
 
 ## Important Links
 
@@ -22,7 +22,7 @@
 
 <br/>
 
-{{A template for creating ...}}
+A submodule for nestjs, with features like a llm
 
 ## Install
 
@@ -33,7 +33,6 @@ npm install PLACEHOLDER_REPO_NAME
 ## Swagger
 
 Go to localhost:3000/docs
-
 
 ## Example API
 
@@ -65,7 +64,6 @@ npm run zod:generate
 ```
 
 Schematy zostaną wygenerowane w katalogu `../frontend/types/zod-schemas`.
-
 
 ### Integrated features
 
@@ -207,19 +205,19 @@ This will create a `graph.svg` file, which contains a graphical representation o
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 [![GitHub License][github-license-badge]][github-license-badge-link]
 
-[build-img]: https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/actions/workflows/release.yml/badge.svg
-[build-url]: https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/actions/workflows/release.yml
-[downloads-img]: https://img.shields.io/npm/dt/{{PLACEHOLDER_REPO_NAME}}
-[downloads-url]: https://www.npmtrends.com/{{PLACEHOLDER_REPO_NAME}}
-[npm-img]: https://img.shields.io/npm/v/{{PLACEHOLDER_REPO_NAME}}
-[npm-url]: https://www.npmjs.com/package/{{PLACEHOLDER_REPO_NAME}}
-[issues-img]: https://img.shields.io/github/issues/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}
-[issues-url]: https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/issues
+[build-img]: https://github.com/SebastianWesolowski/s-nestjs-module-llm/actions/workflows/release.yml/badge.svg
+[build-url]: https://github.com/SebastianWesolowski/s-nestjs-module-llm/actions/workflows/release.yml
+[downloads-img]: https://img.shields.io/npm/dt/s-nestjs-module-llm
+[downloads-url]: https://www.npmtrends.com/s-nestjs-module-llm
+[npm-img]: https://img.shields.io/npm/v/s-nestjs-module-llm
+[npm-url]: https://www.npmjs.com/package/s-nestjs-module-llm
+[issues-img]: https://img.shields.io/github/issues/SebastianWesolowski/s-nestjs-module-llm
+[issues-url]: https://github.com/SebastianWesolowski/s-nestjs-module-llm/issues
 [semantic-release-img]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
 [semantic-release-url]: https://github.com/semantic-release/semantic-release
 [commitizen-img]: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
 [commitizen-url]: http://commitizen.github.io/cz-cli/
-[github-license-badge]: https://img.shields.io/github/license/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}
-[github-license-badge-link]: https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/blob/main/LICENSE
-[github-contributors-badge]: https://img.shields.io/github/contributors/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}
-[github-contributors-badge-link]: https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/graphs/contributors
+[github-license-badge]: https://img.shields.io/github/license/SebastianWesolowski/s-nestjs-module-llm
+[github-license-badge-link]: https://github.com/SebastianWesolowski/s-nestjs-module-llm/blob/main/LICENSE
+[github-contributors-badge]: https://img.shields.io/github/contributors/SebastianWesolowski/s-nestjs-module-llm
+[github-contributors-badge-link]: https://github.com/SebastianWesolowski/s-nestjs-module-llm/graphs/contributors

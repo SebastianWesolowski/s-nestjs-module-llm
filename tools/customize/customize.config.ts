@@ -49,7 +49,7 @@ export const config: CustomizeConfig = {
     },
     {
       placeholder: '{{A template for creating ...}}',
-      value: 'A template for creating npm packages using TypeScript',
+      value: 'A submodule for nestjs, with features like a llm',
       files: ['README.md', 'package.json'],
     },
   ],

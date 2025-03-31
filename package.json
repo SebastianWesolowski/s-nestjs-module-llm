@@ -1,7 +1,7 @@
 {
-  "name": "placeholder-repo-name",
+  "name": "s-nestjs-module-llm",
   "version": "0.0.0-development",
-  "description": "{{A template for creating ...}}",
+  "description": "A submodule for nestjs, with features like a llm",
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -152,21 +152,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}.git"
+    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm.git"
   },
   "license": "MIT",
   "author": {
-    "name": "{{PLACEHOLDER_FULL_NAME}}",
-    "email": "{{PLACEHOLDER_GITHUB_USER}}@users.noreply.github.com",
-    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}"
+    "name": "Sebastian Wesolowski",
+    "email": "SebastianWesolowski@users.noreply.github.com",
+    "url": "https://github.com/SebastianWesolowski"
   },
   "engines": {
-    "node": ">=0.0.0"
+    "node": ">=20.17.0"
   },
   "bugs": {
-    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/issues"
+    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm/issues"
   },
-  "homepage": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}#readme",
+  "homepage": "https://github.com/SebastianWesolowski/s-nestjs-module-llm#readme",
   "config": {
     "commitizen": {
       "path": "node_modules/cz-git"
