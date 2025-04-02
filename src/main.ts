@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { MyModule } from '@/my-module.module';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MyModule);
-
+  const app = await NestFactory.create(AppModule);
+  const PORT = process.env.PORT || 3001;
   const config = new DocumentBuilder()
     .setTitle('S-Nest Module LLM')
     .setDescription('API dokumentacja dla S-Nest Module LLM')
@@ -15,7 +15,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(3001);
+  await app.listen(PORT);
+
+  console.info(`Server is running on http://localhost:${PORT}`);
 }
 
 void bootstrap();

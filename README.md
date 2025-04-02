@@ -1,6 +1,47 @@
-# s-nestjs-module-llm
+# S-NestJS-Module-LLM
 
-<a href="https://github.com/SebastianWesolowski/starter-npm-package"><img align="left" width="440" height="180" alt="s-nestjs-module-llm package" src=".github/assets/heroImageReposytory-nest.png"></a>
+Moduł NestJS do integracji z OpenAI API.
+
+## Dokumentacja
+
+Pełna dokumentacja modułu jest dostępna w katalogu [docs](./docs/index.md).
+
+## Funkcje
+
+- Integracja z API OpenAI
+- Konwersja mowy na tekst
+- Generowanie tekstu na podstawie promptów
+- Analiza obrazów
+- Obsługa JSON-owych odpowiedzi
+
+## Instalacja
+
+```bash
+npm install s-nestjs-module-llm
+```
+
+## Przykład użycia
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LLMModule } from 's-nestjs-module-llm';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot(),
+    LLMModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        apiKey: configService.get('OPENAI_API_KEY'),
+        logPrompts: configService.get('LOG_PROMPTS') === 'true',
+        logPath: configService.get('LOG_PATH'),
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class AppModule {}
+```
 
 ## Important Links
 
@@ -23,12 +64,6 @@
 <br/>
 
 A submodule for nestjs, with features like a llm
-
-## Install
-
-```bash
-npm install PLACEHOLDER_REPO_NAME
-```
 
 ## Swagger
 

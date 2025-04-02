@@ -71,17 +71,10 @@ export const eslintSettings = {
   },
 };
 
-export const typescriptEslintConfigRecommended =
-  typescriptEslint.configs.recommendedTypeChecked;
+export const typescriptEslintConfigRecommended = typescriptEslint.configs.recommendedTypeChecked;
 
 export function getDirectoriesToSort() {
-  const ignoredSortingDirectories = [
-    'node_modules',
-    '.git',
-    '.vscode',
-    'dist',
-    'coverage',
-  ];
+  const ignoredSortingDirectories = ['node_modules', '.git', '.vscode', 'dist', 'coverage'];
   try {
     return fs
       .readdirSync(process.cwd())
@@ -112,7 +105,6 @@ export default typescriptEslint.config(
       prettier: eslintPluginPrettier,
     },
     rules: {
-      'prettier/prettier': 'warn',
       'security/detect-eval-with-expression': 'warn',
       'security/detect-no-csrf-before-method-override': 'warn',
       'security/detect-possible-timing-attacks': 'warn',
@@ -124,9 +116,15 @@ export default typescriptEslint.config(
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-redundant-type-constituents': 'warn',
       '@typescript-eslint/await-thenable': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -159,14 +157,7 @@ export default typescriptEslint.config(
       'import/order': [
         'warn',
         {
-          groups: [
-            'external',
-            'builtin',
-            'internal',
-            'sibling',
-            'parent',
-            'index',
-          ],
+          groups: ['external', 'builtin', 'internal', 'sibling', 'parent', 'index'],
           pathGroups: [
             ...getDirectoriesToSort().map((dir) => ({
               pattern: `${dir}/**`,
@@ -188,5 +179,5 @@ export default typescriptEslint.config(
   },
   {
     settings: eslintSettings,
-  },
+  }
 );

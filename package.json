@@ -64,6 +64,7 @@
     "update-template:build": "s-build --remoteRepository='https://github.com/SebastianWesolowski/s-template/tree/dev/templates/nestjsModule'"
   },
   "dependencies": {
+    "@anatine/zod-nestjs": "^2.0.10",
     "@nestjs/common": "^11.0.12",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^11.0.12",
@@ -73,6 +74,7 @@
     "cpy-cli": "^5.0.0",
     "fs-extra": "^11.2.0",
     "npm-run-all": "^4.1.5",
+    "openai": "^4.91.0",
     "openapi3-ts": "^4.4.0",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
@@ -80,6 +82,8 @@
     "typescript": "^5.7.3"
   },
   "devDependencies": {
+    "@anatine/zod-mock": "^3.13.5",
+    "@anatine/zod-openapi": "^2.2.7",
     "@babel/core": "^7.23.3",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
@@ -148,7 +152,9 @@
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
-    "typescript-eslint": "^8.21.0"
+    "typescript-eslint": "^8.21.0",
+    "zod": "^3.22.4",
+    "zod-to-ts": "^1.2.0"
   },
   "repository": {
     "type": "git",

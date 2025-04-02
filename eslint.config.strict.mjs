@@ -89,6 +89,11 @@ const config = typescriptEslint.config(
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-redundant-type-constituents': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -108,14 +113,7 @@ const config = typescriptEslint.config(
       'import/order': [
         'error',
         {
-          groups: [
-            'external',
-            'builtin',
-            'internal',
-            'sibling',
-            'parent',
-            'index',
-          ],
+          groups: ['external', 'builtin', 'internal', 'sibling', 'parent', 'index'],
           pathGroups: [
             ...getDirectoriesToSort().map((singleDir) => ({
               pattern: `${singleDir}/**`,
@@ -137,7 +135,7 @@ const config = typescriptEslint.config(
   },
   {
     settings: eslintSettings,
-  },
+  }
 );
 
 export default config;
