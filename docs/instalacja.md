@@ -74,6 +74,14 @@ LOG_PROMPTS=true
 LOG_PATH=logs/openai.log
 ```
 
+## Wymagania systemowe
+
+Moduł wymaga następujących zależności:
+
+- Node.js >= 20.17.0
+- NestJS >= 11.0.0
+- OpenAI API >= 4.91.0
+
 ## Następne kroki
 
 Aby dowiedzieć się więcej o architekturze modułu, przejdź do [Architektura](./architektura.md).

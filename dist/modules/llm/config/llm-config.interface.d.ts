@@ -1,3 +1,4 @@
+import { DynamicModule, InjectionToken, OptionalFactoryDependency, Type } from '@nestjs/common';
 export interface LLMModuleOptions {
     apiKey?: string;
     logPrompts?: boolean;
@@ -7,6 +8,6 @@ export interface LLMModuleOptions {
 }
 export interface LLMModuleAsyncOptions {
     useFactory: (...args: any[]) => Promise<LLMModuleOptions> | LLMModuleOptions;
-    inject?: any[];
-    imports?: any[];
+    inject?: (InjectionToken | OptionalFactoryDependency)[];
+    imports?: (Type<any> | DynamicModule | Promise<DynamicModule>)[];
 }

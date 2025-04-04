@@ -1,11 +1,11 @@
 import type { ChatCompletion, ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { LLMModuleOptions } from './config/llm-config.interface';
-import { ChatCompletionResponse } from './interfaces/chat-completion-response.interface';
+import { ChatCompletionResponseType, LLMModuleOptions } from './types';
 export declare class LLMService {
     private openai;
     private readonly config;
+    private readonly logPath;
     constructor(options: LLMModuleOptions);
-    completion(messages: ChatCompletionMessageParam[], model?: string, stream?: boolean, jsonMode?: boolean): Promise<ChatCompletion | AsyncIterable<ChatCompletionChunk>>;
+    completion(messages: ChatCompletionMessageParam[], model?: string, stream?: boolean, jsonMode?: boolean): Promise<ChatCompletionResponseType | ChatCompletion | AsyncIterable<ChatCompletionChunk>>;
     speechToText(audio: File, options?: {
         language?: string;
         model?: string;
@@ -17,7 +17,7 @@ export declare class LLMService {
         jsonMode?: boolean;
         includeRaw?: boolean;
         includeFull?: boolean;
-    }): Promise<ChatCompletionResponse<T>>;
+    }): Promise<ChatCompletionResponseType<T>>;
     private logCompletion;
-    getPictureDescription(pictures: Buffer[], systemPrompt: string): Promise<ChatCompletionResponse<string>>;
+    getPictureDescription(pictures: Buffer[], systemPrompt: string): Promise<ChatCompletionResponseType<string>>;
 }

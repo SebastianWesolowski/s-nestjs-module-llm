@@ -19,7 +19,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot(),
             llm_1.LLMModule.forRootAsync({
                 useFactory: (configService) => ({
-                    apiKey: configService.get('OPENAI_API_KEY'),
+                    apiKey: configService.get('OPENAI_API_KEY') || '',
                     logPrompts: configService.get('LOG_PROMPTS') === 'true',
                     logPath: configService.get('LOG_PATH'),
                 }),

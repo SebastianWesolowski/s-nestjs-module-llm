@@ -15,17 +15,24 @@ Moduł LLM to biblioteka dla NestJS umożliwiająca łatwą integrację z OpenAI
 ## Główne funkcje
 
 - Integracja z API OpenAI
-- Konwersja mowy na tekst
-- Generowanie tekstu na podstawie promptów
-- Analiza obrazów
+- Konwersja mowy na tekst (Whisper)
+- Generowanie tekstu na podstawie promptów (GPT-4o)
+- Analiza obrazów (GPT-4 Vision)
 - Obsługa JSON-owych odpowiedzi
+- Logowanie promptów i odpowiedzi
 
 ## Wspierane modele
 
-- GPT-4o (domyślny)
-- Whisper (konwersja mowy na tekst)
+- GPT-4o (domyślny model dla generowania tekstu)
+- Whisper (domyślny model dla konwersji mowy na tekst)
 - Inne modele dostępne w API OpenAI
 
 ## Jak zacząć
 
 Aby rozpocząć korzystanie z biblioteki, przejdź do sekcji [Instalacja i konfiguracja](./instalacja.md).
+
+## Wymagania systemowe
+
+- Node.js >= 20.17.0
+- NestJS >= 11.0.0
+- Klucz API OpenAI

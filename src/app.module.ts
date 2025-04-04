@@ -7,7 +7,7 @@ import { LLMModule } from './modules/llm';
     ConfigModule.forRoot(),
     LLMModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
-        apiKey: configService.get('OPENAI_API_KEY'),
+        apiKey: configService.get('OPENAI_API_KEY') || '',
         logPrompts: configService.get('LOG_PROMPTS') === 'true',
         logPath: configService.get('LOG_PATH'),
       }),

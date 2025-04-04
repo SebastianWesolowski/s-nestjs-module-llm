@@ -25,8 +25,8 @@ Interfejs opisujący opcje konfiguracyjne dla asynchronicznej inicjalizacji modu
 ```typescript
 export interface LLMModuleAsyncOptions {
   useFactory: (...args: any[]) => Promise<LLMModuleOptions> | LLMModuleOptions;
-  inject?: any[];
-  imports?: any[];
+  inject?: (InjectionToken | OptionalFactoryDependency)[];
+  imports?: (Type<any> | DynamicModule | Promise<DynamicModule>)[];
 }
 ```
 
@@ -50,6 +50,25 @@ Gdzie:
 - `rawContent` - Surowa treść odpowiedzi w formie tekstowej
 - `fullResponse` - Pełna odpowiedź z API OpenAI, zawierająca metadane
 
+### ChatCompletionResponseType
+
+Typ reprezentujący odpowiedź z API chat completion:
+
+```typescript
+export type ChatCompletionResponseType<T = unknown> = {
+  messages?: {
+    role: string;
+    content: string;
+  }[];
+  totalTokens?: number;
+  promptTokens?: number;
+  completionTokens?: number;
+  parsedContent?: T;
+  rawContent?: string;
+  fullResponse?: unknown;
+};
+```
+
 ## DTO (Data Transfer Objects)
 
 ### SpeechToTextDto
@@ -57,28 +76,47 @@ Gdzie:
 Obiekt transferu danych dla endpointu konwersji mowy na tekst:
 
 ```typescript
-export class SpeechToTextDto {
-  file: File;
+export class SpeechToTextDto implements SpeechToTextInput {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: Multer.File;
+
+  @ApiProperty({ required: false })
   language?: string;
+
+  @ApiProperty({ required: false })
   model?: string;
-  responseFormat?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt';
+
+  @ApiProperty({
+    required: false,
+    enum: ['json', 'text', 'srt', 'verbose_json', 'vtt'],
+    default: 'json',
+  })
+  responseFormat: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt';
+
+  static validate(data: unknown): SpeechToTextInput {
+    return SpeechToTextSchema.parse(data);
+  }
 }
 ```
 
 ### CompletionDto
 
-Obiekt transferu danych dla kompletacji tekstu:
+DTO dla żądań generowania tekstu:
 
 ```typescript
-export class CompletionDto {
-  messages: {
-    role: 'system' | 'user' | 'assistant';
-    content: string;
-  }[];
-  model?: string;
-  stream?: boolean;
-  jsonMode?: boolean;
-}
+export const CompletionSchema = z.strictObject({
+  messages: z.array(
+    z.object({
+      role: z.string(),
+      content: z.string(),
+    })
+  ),
+  model: z.string().optional(),
+  stream: z.boolean().optional().default(false),
+  jsonMode: z.boolean().optional().default(false),
+});
+
+export class CompletionDto extends createZodDto(CompletionSchema) {}
 ```
 
 ## Schematy Zod
@@ -89,27 +127,29 @@ Schemat walidacyjny Zod dla żądań konwersji mowy na tekst:
 
 ```typescript
 export const SpeechToTextSchema = z.object({
-  file: z.instanceof(File),
+  file: z.any(), // dla plików binarnych
   language: z.string().optional(),
   model: z.string().optional(),
-  responseFormat: z.enum(['json', 'text', 'srt', 'verbose_json', 'vtt']).optional(),
+  responseFormat: z.enum(['json', 'text', 'srt', 'verbose_json', 'vtt']).optional().default('json'),
 });
+
+export type SpeechToTextInput = z.infer<typeof SpeechToTextSchema>;
 ```
 
-### LLMConfigSchema
+### CompletionSchema
 
-Schemat walidacyjny Zod dla konfiguracji modułu:
+Schemat walidacyjny Zod dla żądań generowania tekstu:
 
 ```typescript
-export const LLMConfigSchema = z.object({
-  apiKey: z.string().optional(),
-  logPrompts: z.boolean().optional().default(false),
-  logPath: z.string().optional(),
-  defaultModel: z.string().optional().default(DEFAULT_MODEL),
-  defaultWhisperModel: z.string().optional().default(DEFAULT_WHISPER_MODEL),
+export const CompletionSchema = z.strictObject({
+  userPrompt: z.string().min(1),
+  systemPrompt: z.string().min(1),
+  jsonMode: z.boolean().optional().default(false),
+  includeRaw: z.boolean().optional().default(false),
+  includeFull: z.boolean().optional().default(false),
 });
 
-export type LLMConfig = z.infer<typeof LLMConfigSchema>;
+export type CompletionType = z.infer<typeof CompletionSchema>;
 ```
 
 ## Błędy

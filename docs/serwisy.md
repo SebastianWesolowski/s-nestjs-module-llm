@@ -95,7 +95,7 @@ const transcript = await llmService.speechToText(audioFile, {
 
 #### createCompletion
 
-Metoda do tworzenia kompletacji z możliwością dostosowania promptów i formatów odpowiedzi.
+Metoda do generowania tekstu z możliwością dostosowania promptów i formatów odpowiedzi:
 
 ```typescript
 async createCompletion<T = unknown>({
@@ -110,108 +110,43 @@ async createCompletion<T = unknown>({
   jsonMode?: boolean;
   includeRaw?: boolean;
   includeFull?: boolean;
-}): Promise<ChatCompletionResponse<T>>
+}): Promise<ChatCompletionResponseType<T>>
 ```
 
-**Parametry:**
+#### Parametry
 
-- `userPrompt` - Prompt użytkownika
-- `systemPrompt` - Instrukcja systemowa
-- `jsonMode` - Czy wymusić format JSON (domyślnie: false)
-- `includeRaw` - Czy dołączyć surową odpowiedź (domyślnie: false)
-- `includeFull` - Czy dołączyć pełną odpowiedź OpenAI (domyślnie: false)
+- `userPrompt` - Prompt od użytkownika
+- `systemPrompt` - Prompt systemowy
+- `jsonMode` - Czy wymusić format JSON w odpowiedzi
+- `includeRaw` - Czy dołączyć surową odpowiedź
+- `includeFull` - Czy dołączyć pełną odpowiedź z API
 
-**Zwraca:**
+#### Zwracana wartość
 
-- Obiekt `ChatCompletionResponse<T>` zawierający przetworzoną odpowiedź
-
-**Przykład użycia:**
-
-```typescript
-interface UserProfile {
-  name: string;
-  age: number;
-}
-
-const profile = await llmService.createCompletion<UserProfile>({
-  userPrompt: 'Jan Kowalski, 30 lat',
-  systemPrompt: 'Wyodrębnij informacje o użytkowniku w formacie JSON',
-  jsonMode: true,
-});
-```
+- Obiekt `ChatCompletionResponseType<T>` zawierający przetworzoną odpowiedź
 
 #### getPictureDescription
 
-Metoda do analizy obrazów przy użyciu modelu GPT-4 Vision.
+Metoda do analizy obrazów przy użyciu GPT-4 Vision:
 
 ```typescript
 async getPictureDescription(
   pictures: Buffer[],
   systemPrompt: string
-): Promise<ChatCompletionResponse<string>>
+): Promise<ChatCompletionResponseType<string>>
 ```
 
-**Parametry:**
+#### Parametry
 
-- `pictures` - Tablica buforów obrazów do analizy
-- `systemPrompt` - Instrukcja systemowa
+- `pictures` - Tablica buforów z obrazami do analizy
+- `systemPrompt` - Instrukcja systemowa dla analizy obrazów
 
-**Zwraca:**
+#### Zwracana wartość
 
-- Obiekt `ChatCompletionResponse<string>` zawierający opis obrazów
+- Obiekt `ChatCompletionResponseType<string>` zawierający opis obrazów
 
 **Przykład użycia:**
 
-```typescript
-const imageBuffer = await fs.readFile('image.jpg');
-const description = await llmService.getPictureDescription(
-  [imageBuffer],
-  'Opisz szczegółowo, co znajduje się na tym obrazie'
-);
 ```
 
-### Metody prywatne
-
-#### logCompletion
-
-Metoda do logowania promptów i odpowiedzi do pliku.
-
-```typescript
-private async logCompletion(
-  messages: ChatCompletionMessageParam[],
-  completion: unknown
-): Promise<void>
 ```
-
-**Parametry:**
-
-- `messages` - Wiadomości wysłane do OpenAI
-- `completion` - Odpowiedź otrzymana od OpenAI
-
-**Zachowanie:**
-
-- Zapisuje logi tylko jeśli `config.logPrompts` jest ustawione na `true`
-- Zapisuje dane do pliku określonego w `config.logPath`
-
-## Wstrzykiwanie serwisu
-
-Aby użyć serwisu w innych częściach aplikacji, należy go wstrzyknąć:
-
-```typescript
-import { Injectable } from '@nestjs/common';
-import { LLMService } from 's-nestjs-module-llm';
-
-@Injectable()
-export class MojSerwis {
-  constructor(private readonly llmService: LLMService) {}
-
-  async generujTekst(prompt: string): Promise<string> {
-    const response = await this.llmService.completion([{ role: 'user', content: prompt }]);
-    return response.choices[0].message.content;
-  }
-}
-```
-
-## Następne kroki
-
-Aby dowiedzieć się więcej o kontrolerach dostępnych w module, przejdź do [Kontrolery](./kontrolery.md).

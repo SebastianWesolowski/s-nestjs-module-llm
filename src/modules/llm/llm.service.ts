@@ -1,4 +1,7 @@
-// Serwis do obsługi danych użytkowników
+/**
+ * Serwis do komunikacji z API OpenAI.
+ * Zapewnia metody do generowania tekstu, konwersji mowy na tekst i analizy obrazów.
+ */
 import { Inject, Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import type {
@@ -8,21 +11,26 @@ import type {
 } from 'openai/resources/chat/completions';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { LLMModuleOptions } from './config/llm-config.interface';
 import { DEFAULT_MODEL, DEFAULT_WHISPER_MODEL, LLM_MODULE_OPTIONS } from './config/llm.constants';
 import { OpenAIError } from './errors/open-ai.error';
-import { ChatCompletionResponse } from './interfaces/chat-completion-response.interface';
+import { ChatCompletionResponseType, LLMModuleOptions } from './types';
 
 /**
- * Service class for interacting with OpenAI's API.
- * @class LLMService
- * @description Handles OpenAI integrations including chat completions, speech-to-text, etc.
+ * Serwis do komunikacji z API OpenAI.
+ * Zapewnia metody do generowania tekstu, konwersji mowy na tekst i analizy obrazów.
  */
 @Injectable()
 export class LLMService {
   private openai: OpenAI;
   private readonly config: Required<LLMModuleOptions>;
+  private readonly logPath: string;
 
+  /**
+   * Konstruktor serwisu LLM.
+   * Inicjalizuje klienta OpenAI i konfigurację modułu.
+   *
+   * @param options - Opcje konfiguracyjne modułu
+   */
   constructor(
     @Inject(LLM_MODULE_OPTIONS)
     options: LLMModuleOptions
@@ -30,32 +38,32 @@ export class LLMService {
     const defaultConfig: Required<LLMModuleOptions> = {
       apiKey: process.env.OPENAI_API_KEY ?? '',
       logPrompts: false,
-      logPath: path.join(__dirname, 'prompt.md'),
+      logPath: path.join(__dirname, 'prompts.md'),
       defaultModel: DEFAULT_MODEL,
       defaultWhisperModel: DEFAULT_WHISPER_MODEL,
     };
 
     this.config = { ...defaultConfig, ...options };
     this.openai = new OpenAI({ apiKey: this.config.apiKey });
+    this.logPath = this.config.logPath || path.join(__dirname, 'prompts.md');
   }
 
   /**
-   * Generates a chat completion using OpenAI's API.
-   * @async
-   * @param {ChatCompletionMessageParam[]} messages - Array of chat messages to send to OpenAI
-   * @param {string} [model] - The OpenAI model to use for completion
-   * @param {boolean} [stream=false] - Whether to stream the response
-   * @param {boolean} [jsonMode=false] - Whether to force JSON output format
-   * @returns {Promise<ChatCompletion | AsyncIterable<ChatCompletionChunk>>}
-   * Returns either a complete response or a stream of chunks based on the stream parameter
-   * @throws {OpenAIError} Throws an error if the API request fails
+   * Generuje odpowiedź tekstową na podstawie wiadomości.
+   *
+   * @param messages - Tablica wiadomości w formacie wymaganym przez OpenAI
+   * @param model - Model OpenAI do użycia (domyślnie: wartość z konfiguracji)
+   * @param stream - Czy używać trybu strumieniowego (domyślnie: false)
+   * @param jsonMode - Czy wymusić format JSON w odpowiedzi (domyślnie: false)
+   * @returns Promise z odpowiedzią lub strumieniem odpowiedzi
+   * @throws OpenAIError - W przypadku błędu komunikacji z API
    */
   async completion(
     messages: ChatCompletionMessageParam[],
     model = this.config.defaultModel,
     stream = false,
     jsonMode = false
-  ): Promise<ChatCompletion | AsyncIterable<ChatCompletionChunk>> {
+  ): Promise<ChatCompletionResponseType | ChatCompletion | AsyncIterable<ChatCompletionChunk>> {
     try {
       const chatCompletion = await this.openai.chat.completions.create({
         messages,
@@ -64,24 +72,22 @@ export class LLMService {
         response_format: jsonMode ? { type: 'json_object' } : { type: 'text' },
       });
 
-      // Log asynchronously without blocking
+      // Log asynchronicznie bez blokowania
       void this.logCompletion(messages, chatCompletion);
 
       return chatCompletion;
     } catch (error) {
-      throw new OpenAIError('Failed to generate completion', { cause: error });
+      throw new OpenAIError('Nie udało się wygenerować odpowiedzi', { cause: error });
     }
   }
 
   /**
-   * Transcribes audio file to text using OpenAI's Whisper model
-   * @param {File} audio - Audio file to transcribe
-   * @param {Object} options - Optional configuration for transcription
-   * @param {string} [options.language='en'] - Language code of the audio
-   * @param {string} [options.model] - Whisper model to use
-   * @param {('json'|'text'|'srt'|'verbose_json'|'vtt')} [options.responseFormat='json'] - Format of the response
-   * @returns {Promise<string>} Transcribed text from the audio file
-   * @throws {OpenAIError} If transcription fails
+   * Konwertuje plik audio na tekst przy użyciu modelu Whisper.
+   *
+   * @param audio - Plik audio do transkrypcji
+   * @param options - Opcje konfiguracyjne transkrypcji
+   * @returns Promise z tekstem transkrypcji
+   * @throws OpenAIError - W przypadku błędu komunikacji z API
    */
   async speechToText(
     audio: File,
@@ -103,49 +109,16 @@ export class LLMService {
 
       return response.text;
     } catch (error) {
-      throw new OpenAIError('Failed to transcribe audio', { cause: error });
+      throw new OpenAIError('Nie udało się transkrybować audio', { cause: error as Error });
     }
   }
 
   /**
-   * Creates a chat completion with customizable prompts and response handling
-   * @template T - Type of the expected parsed response (for JSON responses)
-   * @param {Object} params - Parameters for the completion
-   * @param {string} params.userPrompt - The user's input prompt
-   * @param {string} params.systemPrompt - The system instruction prompt
-   * @param {boolean} [params.jsonMode=false] - Whether to force JSON output format
-   * @param {boolean} [params.includeRaw=false] - Whether to include raw response content
-   * @param {boolean} [params.includeFull=false] - Whether to include full OpenAI response
-   * @returns {Promise<ChatCompletionResponse<T>>} Formatted response based on parameters
-   * @throws {OpenAIError} If the API request fails or JSON parsing fails when jsonMode is true
+   * Tworzy kompletację z możliwością dostosowania promptów i formatów odpowiedzi.
    *
-   * @example
-   * // For simple text responses
-   * const textResult = await openAIService.createCompletion({
-   *   userPrompt: 'Summarize this article...',
-   *   systemPrompt: 'You are a professional summarizer.'
-   * });
-   *
-   * // For structured JSON responses
-   * interface UserProfile {
-   *   name: string;
-   *   age: number;
-   *   interests: string[];
-   * }
-   *
-   * const jsonResult = await openAIService.createCompletion<UserProfile>({
-   *   userPrompt: 'Extract user profile from: John, 25, likes coding and hiking',
-   *   systemPrompt: 'Extract structured user data',
-   *   jsonMode: true
-   * });
-   *
-   * // For debugging with full response
-   * const debugResult = await openAIService.createCompletion({
-   *   userPrompt: 'Debug this...',
-   *   systemPrompt: 'Analyze the issue',
-   *   includeRaw: true,
-   *   includeFull: true
-   * });
+   * @param params - Parametry kompletacji
+   * @returns Promise z odpowiedzią w formacie ChatCompletionResponse
+   * @throws OpenAIError - W przypadku błędu komunikacji z API lub parsowania JSON
    */
   async createCompletion<T = unknown>({
     userPrompt,
@@ -159,10 +132,10 @@ export class LLMService {
     jsonMode?: boolean;
     includeRaw?: boolean;
     includeFull?: boolean;
-  }): Promise<ChatCompletionResponse<T>> {
+  }): Promise<ChatCompletionResponseType<T>> {
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -173,16 +146,16 @@ export class LLMService {
       const content = response.choices[0]?.message?.content;
 
       if (!content) {
-        throw new OpenAIError('No content received from OpenAI');
+        throw new OpenAIError('Nie otrzymano treści od OpenAI');
       }
 
-      const result: ChatCompletionResponse<T> = {};
+      const result: ChatCompletionResponseType<T> = {};
 
       if (jsonMode) {
         try {
           result.parsedContent = JSON.parse(content) as T;
         } catch (parseError) {
-          throw new OpenAIError('Failed to parse OpenAI response as JSON', { cause: parseError });
+          throw new OpenAIError('Nie udało się sparsować odpowiedzi OpenAI jako JSON', { cause: parseError as Error });
         }
       }
 
@@ -203,32 +176,16 @@ export class LLMService {
       if (error instanceof OpenAIError) {
         throw error;
       }
-      throw new OpenAIError('Failed to create completion', { cause: error });
+      throw new OpenAIError('Nie udało się utworzyć kompletacji', { cause: error as Error });
     }
   }
 
   /**
-   * Logs chat completion messages and responses to a file
-   * @private
-   * @param {ChatCompletionMessageParam[]} messages - The messages sent to OpenAI
-   * @param {unknown} completion - The completion response from OpenAI
-   * @throws {OpenAIError} When logging fails
-   * @description
-   * This method logs both the input messages and completion response to a file specified in config.logPath.
-   * Logging only occurs if config.logPrompts is true.
+   * Loguje wiadomości i odpowiedzi do pliku.
    *
-   * Format of the log:
-   * ```
-   * Messages:
-   * [serialized messages]
-   *
-   * Chat Completion:
-   * [serialized completion]
-   * ```
-   *
-   * @example
-   * // Inside a public method:
-   * await this.logCompletion(messages, response);
+   * @param messages - Wiadomości wysłane do OpenAI
+   * @param completion - Odpowiedź otrzymana od OpenAI
+   * @throws OpenAIError - W przypadku błędu zapisu do pliku
    */
   private async logCompletion(messages: ChatCompletionMessageParam[], completion: unknown): Promise<void> {
     if (!this.config.logPrompts) return;
@@ -238,46 +195,21 @@ export class LLMService {
         `Messages:\n${JSON.stringify(messages, null, 2)}\n\n` +
         `Chat Completion:\n${JSON.stringify(completion, null, 2)}\n\n`;
 
-      await fs.appendFile(this.config.logPath, logContent);
+      await fs.appendFile(this.logPath, logContent);
     } catch (error) {
-      throw new OpenAIError('Failed to log completion', { cause: error });
+      throw new OpenAIError('Nie udało się zalogować kompletacji', { cause: error });
     }
   }
 
   /**
-   * Gets a description of one or more images using GPT-4 Vision
-   * @param {Buffer[]} pictures - Array of image buffers to analyze
-   * @param {string} systemPrompt - The system instruction prompt for image analysis
-   * @returns {Promise<ChatCompletionResponse<string>>} The description of the images
-   * @throws {OpenAIError} If the API request fails
+   * Otrzymuje opis jednego lub więcej obrazów przy użyciu GPT-4 Vision.
    *
-   * @example
-   * // Single image analysis
-   * const imageBuffer = await fs.readFile('image.jpg');
-   * const description = await openAIService.getPictureDescription(
-   *   [imageBuffer],
-   *   'Describe this image in detail, focusing on key elements'
-   * );
-   *
-   * // Multiple images comparison
-   * const images = await Promise.all([
-   *   fs.readFile('before.jpg'),
-   *   fs.readFile('after.jpg')
-   * ]);
-   * const comparison = await openAIService.getPictureDescription(
-   *   images,
-   *   'Compare these two images and highlight the differences'
-   * );
-   *
-   * @description
-   * Best used for:
-   * - Image content analysis
-   * - Object detection and description
-   * - Scene understanding
-   * - Text extraction from images
-   * - Image comparison
+   * @param pictures - Tablica buforów obrazów do analizy
+   * @param systemPrompt - Instrukcja systemowa dla analizy obrazów
+   * @returns Promise z odpowiedzią zawierającą opis obrazów
+   * @throws OpenAIError - W przypadku błędu komunikacji z API
    */
-  async getPictureDescription(pictures: Buffer[], systemPrompt: string): Promise<ChatCompletionResponse<string>> {
+  async getPictureDescription(pictures: Buffer[], systemPrompt: string): Promise<ChatCompletionResponseType<string>> {
     try {
       const imageMessages = pictures.map((pic) => ({
         type: 'image_url' as const,
@@ -287,7 +219,7 @@ export class LLMService {
       }));
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4-vision-preview',
         messages: [
           {
             role: 'system',
@@ -302,10 +234,10 @@ export class LLMService {
         max_tokens: 1000,
       });
 
-      const content = response.choices[0] ? response.choices[0]?.message?.content : 'No content received from OpenAI';
+      const content = response.choices[0] ? response.choices[0]?.message?.content : 'Nie otrzymano treści od OpenAI';
 
       if (!content) {
-        throw new OpenAIError('No content received from OpenAI');
+        throw new OpenAIError('Nie otrzymano treści od OpenAI');
       }
 
       return {
@@ -314,7 +246,7 @@ export class LLMService {
         fullResponse: response,
       };
     } catch (error) {
-      throw new OpenAIError('Failed to get picture description', { cause: error });
+      throw new OpenAIError('Nie udało się uzyskać opisu obrazu', { cause: error });
     }
   }
 }

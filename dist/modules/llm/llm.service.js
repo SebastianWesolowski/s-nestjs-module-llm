@@ -25,16 +25,18 @@ const open_ai_error_1 = require("./errors/open-ai.error");
 let LLMService = class LLMService {
     openai;
     config;
+    logPath;
     constructor(options) {
         const defaultConfig = {
             apiKey: process.env.OPENAI_API_KEY ?? '',
             logPrompts: false,
-            logPath: path_1.default.join(__dirname, 'prompt.md'),
+            logPath: path_1.default.join(__dirname, 'prompts.md'),
             defaultModel: llm_constants_1.DEFAULT_MODEL,
             defaultWhisperModel: llm_constants_1.DEFAULT_WHISPER_MODEL,
         };
         this.config = { ...defaultConfig, ...options };
         this.openai = new openai_1.default({ apiKey: this.config.apiKey });
+        this.logPath = this.config.logPath || path_1.default.join(__dirname, 'prompts.md');
     }
     async completion(messages, model = this.config.defaultModel, stream = false, jsonMode = false) {
         try {
@@ -48,7 +50,7 @@ let LLMService = class LLMService {
             return chatCompletion;
         }
         catch (error) {
-            throw new open_ai_error_1.OpenAIError('Failed to generate completion', { cause: error });
+            throw new open_ai_error_1.OpenAIError('Nie udało się wygenerować odpowiedzi', { cause: error });
         }
     }
     async speechToText(audio, options = {}) {
@@ -63,13 +65,13 @@ let LLMService = class LLMService {
             return response.text;
         }
         catch (error) {
-            throw new open_ai_error_1.OpenAIError('Failed to transcribe audio', { cause: error });
+            throw new open_ai_error_1.OpenAIError('Nie udało się transkrybować audio', { cause: error });
         }
     }
     async createCompletion({ userPrompt, systemPrompt, jsonMode = false, includeRaw = false, includeFull = false, }) {
         try {
             const response = await this.openai.chat.completions.create({
-                model: 'gpt-4o',
+                model: 'gpt-4',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt },
@@ -78,7 +80,7 @@ let LLMService = class LLMService {
             });
             const content = response.choices[0]?.message?.content;
             if (!content) {
-                throw new open_ai_error_1.OpenAIError('No content received from OpenAI');
+                throw new open_ai_error_1.OpenAIError('Nie otrzymano treści od OpenAI');
             }
             const result = {};
             if (jsonMode) {
@@ -86,7 +88,7 @@ let LLMService = class LLMService {
                     result.parsedContent = JSON.parse(content);
                 }
                 catch (parseError) {
-                    throw new open_ai_error_1.OpenAIError('Failed to parse OpenAI response as JSON', { cause: parseError });
+                    throw new open_ai_error_1.OpenAIError('Nie udało się sparsować odpowiedzi OpenAI jako JSON', { cause: parseError });
                 }
             }
             if (includeRaw) {
@@ -104,7 +106,7 @@ let LLMService = class LLMService {
             if (error instanceof open_ai_error_1.OpenAIError) {
                 throw error;
             }
-            throw new open_ai_error_1.OpenAIError('Failed to create completion', { cause: error });
+            throw new open_ai_error_1.OpenAIError('Nie udało się utworzyć kompletacji', { cause: error });
         }
     }
     async logCompletion(messages, completion) {
@@ -113,10 +115,10 @@ let LLMService = class LLMService {
         try {
             const logContent = `Messages:\n${JSON.stringify(messages, null, 2)}\n\n` +
                 `Chat Completion:\n${JSON.stringify(completion, null, 2)}\n\n`;
-            await fs_1.promises.appendFile(this.config.logPath, logContent);
+            await fs_1.promises.appendFile(this.logPath, logContent);
         }
         catch (error) {
-            throw new open_ai_error_1.OpenAIError('Failed to log completion', { cause: error });
+            throw new open_ai_error_1.OpenAIError('Nie udało się zalogować kompletacji', { cause: error });
         }
     }
     async getPictureDescription(pictures, systemPrompt) {
@@ -128,7 +130,7 @@ let LLMService = class LLMService {
                 },
             }));
             const response = await this.openai.chat.completions.create({
-                model: 'gpt-4o',
+                model: 'gpt-4-vision-preview',
                 messages: [
                     {
                         role: 'system',
@@ -141,9 +143,9 @@ let LLMService = class LLMService {
                 ],
                 max_tokens: 1000,
             });
-            const content = response.choices[0] ? response.choices[0]?.message?.content : 'No content received from OpenAI';
+            const content = response.choices[0] ? response.choices[0]?.message?.content : 'Nie otrzymano treści od OpenAI';
             if (!content) {
-                throw new open_ai_error_1.OpenAIError('No content received from OpenAI');
+                throw new open_ai_error_1.OpenAIError('Nie otrzymano treści od OpenAI');
             }
             return {
                 parsedContent: content,
@@ -152,7 +154,7 @@ let LLMService = class LLMService {
             };
         }
         catch (error) {
-            throw new open_ai_error_1.OpenAIError('Failed to get picture description', { cause: error });
+            throw new open_ai_error_1.OpenAIError('Nie udało się uzyskać opisu obrazu', { cause: error });
         }
     }
 };

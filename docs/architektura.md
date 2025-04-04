@@ -22,6 +22,7 @@ src/modules/llm/
 ├── interfaces/         # Interfejsy i typy
 │   └── chat-completion-response.interface.ts
 ├── schemas/            # Schematy walidacyjne Zod
+│   ├── completion.schema.ts
 │   └── speech-to-text.schema.ts
 ├── services/           # Dodatkowe serwisy
 ├── index.ts            # Publiczne API modułu
@@ -76,13 +77,15 @@ Główny serwis, który obsługuje komunikację z API OpenAI. Udostępnia metody
 - Generowania tekstu (chat completions)
 - Konwersji mowy na tekst
 - Analizy obrazów
+- Logowania promptów i odpowiedzi
 
 ### Walidacja
 
 Moduł wykorzystuje bibliotekę Zod do walidacji danych wejściowych:
 
 - `ZodValidationPipe` - Pipe do walidacji żądań HTTP
-- `LLMConfigSchema` - Schemat walidacyjny dla opcji konfiguracyjnych
+- `SpeechToTextSchema` - Schemat walidacyjny dla żądań konwersji mowy na tekst
+- `CompletionSchema` - Schemat walidacyjny dla żądań generowania tekstu
 
 ## Obsługa błędów
 
@@ -94,8 +97,20 @@ Moduł eksportuje:
 
 - `LLMModule` - Główny moduł do konfiguracji
 - `LLMService` - Serwis do wykorzystania w innych modułach
-- Interfejsy i typy - Do zachowania typowania
+- `LLMModuleOptions` - Interfejs opcji konfiguracyjnych
+- `ChatCompletionResponse` - Interfejs odpowiedzi z API
+- `OpenAIError` - Klasa błędu
+- `CompletionDto` - DTO dla żądań generowania tekstu
+- `SpeechToTextDto` - DTO dla żądań konwersji mowy na tekst
 
 ## Następne kroki
 
 Aby dowiedzieć się więcej o serwisach dostępnych w module, przejdź do [Serwisy](./serwisy.md).
+
+### Główne komponenty
+
+- `LLMModule` - Główny moduł NestJS
+- `LLMService` - Serwis do komunikacji z API OpenAI
+- `ChatCompletionResponseType` - Typ odpowiedzi z API
+- `CompletionDto` - DTO dla żądań generowania tekstu (zdefiniowane przy użyciu Zod)
+- `OpenAIError` - Klasa błędów specyficznych dla modułu

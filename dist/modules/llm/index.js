@@ -16,9 +16,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./llm.module"), exports);
 __exportStar(require("./llm.service"), exports);
-__exportStar(require("./config/llm-config.interface"), exports);
-__exportStar(require("./interfaces/chat-completion-response.interface"), exports);
 __exportStar(require("./errors/open-ai.error"), exports);
-__exportStar(require("./dto/completion.dto"), exports);
-__exportStar(require("./dto/speech-to-text.dto"), exports);
+__exportStar(require("./types/index"), exports);
 //# sourceMappingURL=index.js.map

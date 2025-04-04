@@ -1,6 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
-import { LLMModuleAsyncOptions, LLMModuleOptions } from './config/llm-config.interface';
+import { AsyncLLMConfigType, LLMConfigType } from './types';
 export declare class LLMModule {
-    static forRoot(options?: LLMModuleOptions): DynamicModule;
-    static forRootAsync(options: LLMModuleAsyncOptions): DynamicModule;
+    static forRoot(options: LLMConfigType): DynamicModule;
+    static forRootAsync(options: AsyncLLMConfigType): DynamicModule;
 }

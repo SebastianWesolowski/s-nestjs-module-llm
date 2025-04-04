@@ -9,12 +9,12 @@ export declare const ValidationErrorSchema: z.ZodObject<{
             fullPath: z.ZodString;
             error: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;
         }, {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;
@@ -44,7 +44,7 @@ export declare const ValidationErrorSchema: z.ZodObject<{
         }>>;
     }, "strip", z.ZodTypeAny, {
         validation: {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;
@@ -60,7 +60,7 @@ export declare const ValidationErrorSchema: z.ZodObject<{
         } | undefined;
     }, {
         validation: {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;
@@ -93,7 +93,7 @@ export declare const ValidationErrorSchema: z.ZodObject<{
     message: string;
     errors: {
         validation: {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;
@@ -119,7 +119,7 @@ export declare const ValidationErrorSchema: z.ZodObject<{
     message: string;
     errors: {
         validation: {
-            type: "params" | "response" | "unknown";
+            type: "params" | "unknown" | "response";
             error: string;
             field: string;
             fullPath: string;

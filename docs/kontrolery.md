@@ -94,10 +94,10 @@ Schemat walidacyjny `SpeechToTextSchema` definiuje oczekiwane pola i ich typy:
 
 ```typescript
 export const SpeechToTextSchema = z.object({
-  file: z.instanceof(File),
+  file: z.any(), // dla plików binarnych
   language: z.string().optional(),
   model: z.string().optional(),
-  responseFormat: z.enum(['json', 'text', 'srt', 'verbose_json', 'vtt']).optional(),
+  responseFormat: z.enum(['json', 'text', 'srt', 'verbose_json', 'vtt']).optional().default('json'),
 });
 ```
 

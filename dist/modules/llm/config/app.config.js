@@ -11,12 +11,8 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const zod_1 = require("zod");
 const EnvSchema = zod_1.z.object({
-    NODE_ENV: zod_1.z
-        .enum(['development', 'production', 'test'])
-        .default('development'),
-    PORT: zod_1.z
-        .preprocess((a) => parseInt(String(a), 10), zod_1.z.number().positive())
-        .default(3000),
+    NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
+    PORT: zod_1.z.preprocess((a) => parseInt(String(a), 10), zod_1.z.number().positive()).default(3000),
 });
 let ZodConfigModule = class ZodConfigModule {
 };
