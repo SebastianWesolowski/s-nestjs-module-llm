@@ -2,10 +2,11 @@
  * Kontroler REST API dla modułu LLM.
  * Udostępnia endpointy do komunikacji z modelami językowymi.
  */
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, MessageEvent, Post, Sse, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { completionExamples } from '@/modules/llm/__mocks__/completion.examples';
+import { Observable } from 'rxjs';
+import { completionExamples, streamCompletionExamples } from '@/modules/llm/__mocks__/completion.examples';
 import { LLMService } from './llm.service';
 import { ChatCompletionResponseType, CompletionDto, SpeechToTextDto } from './types';
 
@@ -74,6 +75,48 @@ export class LLMController {
       language: speechToTextDto.language,
       model: speechToTextDto.model,
       responseFormat: speechToTextDto.responseFormat,
+    });
+  }
+
+  /**
+   * Endpoint do strumieniowego generowania tekstu.
+   * Wykorzystuje Server-Sent Events (SSE) do przesyłania fragmentów odpowiedzi.
+   */
+  @Post('stream')
+  @Sse()
+  @ApiOperation({ summary: 'Generuje tekst w trybie strumieniowym' })
+  @ApiBody({ type: CompletionDto, examples: streamCompletionExamples })
+  streamCompletion(@Body() completionDto: CompletionDto): Observable<MessageEvent> {
+    return new Observable<MessageEvent>((subscriber) => {
+      void (async () => {
+        try {
+          const stream = await this.llmService.completion(
+            completionDto.messages,
+            completionDto.model,
+            true,
+            completionDto.jsonMode
+          );
+
+          if (stream && Symbol.asyncIterator in stream) {
+            let fullContent = '';
+            for await (const chunk of stream as AsyncIterable<any>) {
+              const content = chunk.choices[0]?.delta?.content || '';
+              if (content) {
+                fullContent += content;
+              }
+            }
+            subscriber.next({
+              data: {
+                content: fullContent,
+                done: true,
+              },
+            });
+            subscriber.complete();
+          }
+        } catch (error) {
+          subscriber.error(error);
+        }
+      })();
     });
   }
 }

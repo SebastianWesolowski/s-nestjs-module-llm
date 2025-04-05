@@ -1,5 +1,20 @@
 import { CompletionDto } from '@/modules/llm/types';
 
+export const streamCompletionExamples: Record<string, { value: CompletionDto }> = {
+  'Przykład ze streamingiem': {
+    value: {
+      messages: [
+        {
+          role: 'user',
+          content: 'Opowiedz mi długą historię',
+        },
+      ],
+      model: 'gpt-4o',
+      stream: true,
+    },
+  },
+};
+
 export const completionExamples: Record<string, { value: CompletionDto }> = {
   'Przykład 1': {
     value: {
@@ -61,18 +76,6 @@ export const completionExamples: Record<string, { value: CompletionDto }> = {
       model: 'gpt-4o',
     },
   },
-  'Przykład ze streamingiem': {
-    value: {
-      messages: [
-        {
-          role: 'user',
-          content: 'Opowiedz mi długą historię',
-        },
-      ],
-      model: 'gpt-4o',
-      stream: true,
-    },
-  },
   'Przykład z trybem JSON': {
     value: {
       messages: [
@@ -106,4 +109,5 @@ export const completionExamples: Record<string, { value: CompletionDto }> = {
       ],
     },
   },
+  ...streamCompletionExamples,
 };
