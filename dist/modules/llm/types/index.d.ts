@@ -88,7 +88,7 @@ export declare const AsyncLLMConfigSchema: z.ZodObject<{
         defaultWhisperModel?: string | undefined;
     }>;
     inject?: InjectionToken[] | undefined;
-    imports?: (Type<unknown> | DynamicModule)[] | undefined;
+    imports?: (DynamicModule | Type<unknown>)[] | undefined;
 }, {
     useFactory: (args_0: any, ...args: unknown[]) => {
         apiKey: string;
@@ -104,7 +104,7 @@ export declare const AsyncLLMConfigSchema: z.ZodObject<{
         defaultWhisperModel?: string | undefined;
     }>;
     inject?: InjectionToken[] | undefined;
-    imports?: (Type<unknown> | DynamicModule)[] | undefined;
+    imports?: (DynamicModule | Type<unknown>)[] | undefined;
 }>;
 export type AsyncLLMConfigType = z.infer<typeof AsyncLLMConfigSchema>;
 export declare const MessageSchema: z.ZodObject<{
@@ -137,12 +137,12 @@ export declare const CompletionSchema: z.ZodObject<{
     jsonMode: z.ZodOptional<z.ZodBoolean>;
 }, "strict", z.ZodTypeAny, {
     messages: ChatCompletionMessageParam[];
-    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
+    model?: "gpt-4o" | "gpt-4o-mini" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }, {
     messages: ChatCompletionMessageParam[];
-    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
+    model?: "gpt-4o" | "gpt-4o-mini" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }>;
@@ -153,12 +153,12 @@ declare const CompletionDto_base: import("@anatine/zod-nestjs").ZodDtoStatic<z.Z
     jsonMode: z.ZodOptional<z.ZodBoolean>;
 }, "strict", z.ZodTypeAny, {
     messages: ChatCompletionMessageParam[];
-    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
+    model?: "gpt-4o" | "gpt-4o-mini" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }, {
     messages: ChatCompletionMessageParam[];
-    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
+    model?: "gpt-4o" | "gpt-4o-mini" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }>>;
