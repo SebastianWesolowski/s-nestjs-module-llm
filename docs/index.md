@@ -6,8 +6,9 @@ Moduł LLM to biblioteka dla NestJS umożliwiająca łatwą integrację z OpenAI
 
 ## Spis treści
 
+- [Podstawy NestJS i modułu LLM](./podstawy.md)
 - [Instalacja i konfiguracja](./instalacja.md)
-- [Architektura](./architektura.md)
+- [Architektura modułu](./architektura.md)
 - [Serwisy](./serwisy.md)
 - [Kontrolery](./kontrolery.md)
 - [Interfejsy i typy](./interfejsy.md)
@@ -29,7 +30,7 @@ Moduł LLM to biblioteka dla NestJS umożliwiająca łatwą integrację z OpenAI
 
 ## Jak zacząć
 
-Aby rozpocząć korzystanie z biblioteki, przejdź do sekcji [Instalacja i konfiguracja](./instalacja.md).
+Aby rozpocząć korzystanie z biblioteki, przejdź do sekcji [Podstawy NestJS i modułu LLM](./podstawy.md).
 
 ## Wymagania systemowe
 

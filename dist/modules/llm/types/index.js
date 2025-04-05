@@ -37,7 +37,7 @@ class MessageDto extends (0, zod_nestjs_1.createZodDto)(exports.MessageSchema) {
 exports.MessageDto = MessageDto;
 exports.CompletionSchema = zod_1.z.strictObject({
     messages: zod_1.z.array(exports.MessageSchema).min(1),
-    model: zod_1.z.string().min(1).optional(),
+    model: zod_1.z.enum(['gpt-4o-mini', 'gpt-4o', 'o1', 'o1-mini', 'o3-mini']).optional(),
     stream: zod_1.z.boolean().optional(),
     jsonMode: zod_1.z.boolean().optional(),
 });

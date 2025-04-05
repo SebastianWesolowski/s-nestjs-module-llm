@@ -132,33 +132,33 @@ export declare class MessageDto extends MessageDto_base {
 export type MessageType = z.infer<typeof MessageSchema>;
 export declare const CompletionSchema: z.ZodObject<{
     messages: z.ZodArray<z.ZodType<ChatCompletionMessageParam, z.ZodTypeDef, ChatCompletionMessageParam>, "many">;
-    model: z.ZodOptional<z.ZodString>;
+    model: z.ZodOptional<z.ZodEnum<["gpt-4o-mini", "gpt-4o", "o1", "o1-mini", "o3-mini"]>>;
     stream: z.ZodOptional<z.ZodBoolean>;
     jsonMode: z.ZodOptional<z.ZodBoolean>;
 }, "strict", z.ZodTypeAny, {
     messages: ChatCompletionMessageParam[];
-    model?: string | undefined;
+    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }, {
     messages: ChatCompletionMessageParam[];
-    model?: string | undefined;
+    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }>;
 declare const CompletionDto_base: import("@anatine/zod-nestjs").ZodDtoStatic<z.ZodObject<{
     messages: z.ZodArray<z.ZodType<ChatCompletionMessageParam, z.ZodTypeDef, ChatCompletionMessageParam>, "many">;
-    model: z.ZodOptional<z.ZodString>;
+    model: z.ZodOptional<z.ZodEnum<["gpt-4o-mini", "gpt-4o", "o1", "o1-mini", "o3-mini"]>>;
     stream: z.ZodOptional<z.ZodBoolean>;
     jsonMode: z.ZodOptional<z.ZodBoolean>;
 }, "strict", z.ZodTypeAny, {
     messages: ChatCompletionMessageParam[];
-    model?: string | undefined;
+    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }, {
     messages: ChatCompletionMessageParam[];
-    model?: string | undefined;
+    model?: "gpt-4o-mini" | "gpt-4o" | "o1" | "o1-mini" | "o3-mini" | undefined;
     stream?: boolean | undefined;
     jsonMode?: boolean | undefined;
 }>>;

@@ -1,8 +1,19 @@
 # Instalacja i konfiguracja
 
+## Wymagania wstępne
+
+Przed instalacją modułu LLM upewnij się, że masz:
+
+1. Zainstalowany Node.js w wersji 20.17.0 lub nowszej
+2. Zainstalowany NestJS w wersji 11.0.0 lub nowszej
+3. Klucz API OpenAI (możesz go uzyskać na [platformie OpenAI](https://platform.openai.com/))
+
 ## Instalacja
 
 Aby zainstalować moduł LLM w swoim projekcie NestJS, wykonaj następujące kroki:
+
+1. Otwórz terminal w katalogu projektu
+2. Wykonaj komendę:
 
 ```bash
 npm install s-nestjs-module-llm
@@ -10,11 +21,12 @@ npm install s-nestjs-module-llm
 
 ## Konfiguracja
 
-Aby skonfigurować moduł LLM, musisz zaimportować go do głównego modułu aplikacji.
+### 1. Prosta konfiguracja
 
-### Prosta konfiguracja
+Najprostszy sposób konfiguracji modułu:
 
 ```typescript
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { LLMModule } from 's-nestjs-module-llm';
 
@@ -29,9 +41,22 @@ import { LLMModule } from 's-nestjs-module-llm';
 export class AppModule {}
 ```
 
-### Konfiguracja z ConfigService
+### 2. Konfiguracja z użyciem zmiennych środowiskowych
+
+Lepszym rozwiązaniem jest użycie zmiennych środowiskowych:
+
+1. Utwórz plik `.env` w głównym katalogu projektu:
+
+```env
+OPENAI_API_KEY=twój-klucz-api-openai
+LOG_PROMPTS=true
+LOG_PATH=logs/openai.log
+```
+
+2. Zaktualizuj konfigurację modułu:
 
 ```typescript
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LLMModule } from 's-nestjs-module-llm';
@@ -52,7 +77,7 @@ import { LLMModule } from 's-nestjs-module-llm';
 export class AppModule {}
 ```
 
-## Opcje konfiguracji
+## Opcje konfiguracyjne
 
 Moduł przyjmuje następujące opcje konfiguracyjne:
 
@@ -64,24 +89,89 @@ Moduł przyjmuje następujące opcje konfiguracyjne:
 | `defaultModel`        | `string`  | `gpt-4o`                     | Domyślny model GPT                          |
 | `defaultWhisperModel` | `string`  | `whisper-1`                  | Domyślny model Whisper                      |
 
-## Zmienne środowiskowe
+## Weryfikacja instalacji
 
-Dla poprawnego działania modułu, zalecane jest ustawienie następujących zmiennych środowiskowych:
+Aby sprawdzić, czy moduł został poprawnie zainstalowany:
 
+1. Utwórz prosty kontroler:
+
+```typescript
+// src/chat/chat.controller.ts
+import { Controller, Post, Body } from '@nestjs/common';
+import { LLMService } from 's-nestjs-module-llm';
+
+@Controller('chat')
+export class ChatController {
+  constructor(private readonly llmService: LLMService) {}
+
+  @Post()
+  async chat(@Body() messages: { role: string; content: string }[]) {
+    return this.llmService.completion(messages);
+  }
+}
 ```
-OPENAI_API_KEY=twój-klucz-api-openai
-LOG_PROMPTS=true
-LOG_PATH=logs/openai.log
+
+2. Zarejestruj kontroler w module:
+
+```typescript
+// src/app.module.ts
+import { Module } from '@nestjs/common';
+import { ChatController } from './chat/chat.controller';
+
+@Module({
+  imports: [
+    // ... konfiguracja LLMModule
+  ],
+  controllers: [ChatController],
+})
+export class AppModule {}
 ```
 
-## Wymagania systemowe
+3. Uruchom aplikację:
 
-Moduł wymaga następujących zależności:
+```bash
+npm run start:dev
+```
 
-- Node.js >= 20.17.0
-- NestJS >= 11.0.0
-- OpenAI API >= 4.91.0
+4. Przetestuj endpoint:
+
+```bash
+curl -X POST http://localhost:3000/chat \
+  -H "Content-Type: application/json" \
+  -d '[{"role":"user","content":"Cześć!"}]'
+```
+
+## Rozwiązywanie problemów
+
+### 1. Błąd "Cannot find module 's-nestjs-module-llm'"
+
+Upewnij się, że:
+
+- Moduł został poprawnie zainstalowany
+- Ścieżka do modułu jest poprawna
+- Masz dostęp do rejestru npm
+
+### 2. Błąd "Invalid API key"
+
+Sprawdź, czy:
+
+- Klucz API jest poprawny
+- Klucz API jest prawidłowo skonfigurowany
+- Masz dostęp do API OpenAI
+
+### 3. Błąd "Module not found"
+
+Upewnij się, że:
+
+- Moduł jest poprawnie zaimportowany
+- Wszystkie zależności są zainstalowane
+- Ścieżki importów są poprawne
 
 ## Następne kroki
 
-Aby dowiedzieć się więcej o architekturze modułu, przejdź do [Architektura](./architektura.md).
+Po poprawnym zainstalowaniu i skonfigurowaniu modułu, możesz:
+
+- Poznać [architekturę modułu](./architektura.md)
+- Dowiedzieć się więcej o [serwisach](./serwisy.md)
+- Poznać [kontrolery](./kontrolery.md)
+- Zrozumieć [interfejsy i typy](./interfejsy.md)

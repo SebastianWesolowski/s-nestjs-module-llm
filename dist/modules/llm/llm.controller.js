@@ -16,6 +16,7 @@ exports.LLMController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
+const completion_examples_1 = require("./__mocks__/completion.examples");
 const llm_service_1 = require("./llm.service");
 const types_1 = require("./types");
 let LLMController = class LLMController {
@@ -51,7 +52,7 @@ exports.LLMController = LLMController;
 __decorate([
     (0, common_1.Post)('completion'),
     (0, swagger_1.ApiOperation)({ summary: 'Generuje tekst na podstawie wiadomości' }),
-    (0, swagger_1.ApiBody)({ type: types_1.CompletionDto }),
+    (0, swagger_1.ApiBody)({ type: types_1.CompletionDto, examples: completion_examples_1.completionExamples }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [types_1.CompletionDto]),

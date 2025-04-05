@@ -18,11 +18,14 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot(),
             llm_1.LLMModule.forRootAsync({
-                useFactory: (configService) => ({
-                    apiKey: configService.get('OPENAI_API_KEY') || '',
-                    logPrompts: configService.get('LOG_PROMPTS') === 'true',
-                    logPath: configService.get('LOG_PATH'),
-                }),
+                useFactory: (configService) => {
+                    console.log('OPENAI_API_KEY:', configService.get('OPENAI_API_KEY'));
+                    return {
+                        apiKey: configService.get('OPENAI_API_KEY') || '',
+                        logPrompts: configService.get('LOG_PROMPTS') === 'true',
+                        logPath: configService.get('LOG_PATH'),
+                    };
+                },
                 inject: [config_1.ConfigService],
             }),
         ],

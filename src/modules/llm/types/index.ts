@@ -102,7 +102,7 @@ export type MessageType = z.infer<typeof MessageSchema>;
 // Completion Schema
 export const CompletionSchema = z.strictObject({
   messages: z.array(MessageSchema as unknown as z.ZodType<ChatCompletionMessageParam>).min(1),
-  model: z.string().min(1).optional(),
+  model: z.enum(['gpt-4o-mini', 'gpt-4o', 'o1', 'o1-mini', 'o3-mini']).optional(),
   stream: z.boolean().optional(),
   jsonMode: z.boolean().optional(),
 });

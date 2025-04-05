@@ -5,6 +5,7 @@
 import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { completionExamples } from '@/modules/llm/__mocks__/completion.examples';
 import { LLMService } from './llm.service';
 import { ChatCompletionResponseType, CompletionDto, SpeechToTextDto } from './types';
 
@@ -30,7 +31,7 @@ export class LLMController {
    */
   @Post('completion')
   @ApiOperation({ summary: 'Generuje tekst na podstawie wiadomości' })
-  @ApiBody({ type: CompletionDto })
+  @ApiBody({ type: CompletionDto, examples: completionExamples })
   async completion(@Body() completionDto: CompletionDto): Promise<ChatCompletionResponseType> {
     const result = await this.llmService.completion(
       completionDto.messages,

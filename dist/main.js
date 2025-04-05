@@ -9,13 +9,13 @@ async function bootstrap() {
     const config = new swagger_1.DocumentBuilder()
         .setTitle('S-Nest Module LLM')
         .setDescription('API dokumentacja dla S-Nest Module LLM')
-        .setVersion('1.0')
         .addTag('s-nestjs-module-llm')
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('docs', app, document);
     await app.listen(PORT);
     console.info(`Server is running on http://localhost:${PORT}`);
+    console.info(`Docs are running on http://localhost:${PORT}/docs`);
 }
 void bootstrap();
 //# sourceMappingURL=main.js.map
