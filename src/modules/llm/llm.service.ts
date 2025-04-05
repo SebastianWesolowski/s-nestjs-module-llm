@@ -195,6 +195,10 @@ export class LLMService {
         `Messages:\n${JSON.stringify(messages, null, 2)}\n\n` +
         `Chat Completion:\n${JSON.stringify(completion, null, 2)}\n\n`;
 
+      // Upewnij się, że katalog istnieje
+      await fs.mkdir(path.dirname(this.logPath), { recursive: true });
+
+      // Dopisz do pliku (stworzy go jeśli nie istnieje)
       await fs.appendFile(this.logPath, logContent);
     } catch (error) {
       throw new OpenAIError('Nie udało się zalogować kompletacji', { cause: error });
