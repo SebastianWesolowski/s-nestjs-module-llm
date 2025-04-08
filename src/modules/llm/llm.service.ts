@@ -4,11 +4,7 @@
  */
 import { Inject, Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
-import type {
-  ChatCompletion,
-  ChatCompletionChunk,
-  ChatCompletionMessageParam,
-} from 'openai/resources/chat/completions';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { DEFAULT_MODEL, DEFAULT_WHISPER_MODEL, LLM_MODULE_OPTIONS } from './config/llm.constants';
@@ -58,12 +54,17 @@ export class LLMService {
    * @returns Promise z odpowiedzią lub strumieniem odpowiedzi
    * @throws OpenAIError - W przypadku błędu komunikacji z API
    */
-  async completion(
-    messages: ChatCompletionMessageParam[],
+  async completion({
+    messages,
     model = this.config.defaultModel,
     stream = false,
-    jsonMode = false
-  ): Promise<ChatCompletionResponseType | ChatCompletion | AsyncIterable<ChatCompletionChunk>> {
+    jsonMode = false,
+  }: {
+    messages: ChatCompletionMessageParam[];
+    model?: string;
+    stream?: boolean;
+    jsonMode?: boolean;
+  }): Promise<OpenAI.Chat.Completions.ChatCompletion> {
     try {
       const chatCompletion = await this.openai.chat.completions.create({
         messages,
@@ -75,7 +76,7 @@ export class LLMService {
       // Log asynchronicznie bez blokowania
       void this.logCompletion(messages, chatCompletion);
 
-      return chatCompletion;
+      return chatCompletion as OpenAI.Chat.Completions.ChatCompletion;
     } catch (error) {
       throw new OpenAIError('Nie udało się wygenerować odpowiedzi', { cause: error });
     }
@@ -231,7 +232,6 @@ export class LLMService {
           },
           {
             role: 'user',
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
             content: imageMessages as any,
           },
         ],

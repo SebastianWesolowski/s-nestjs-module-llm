@@ -5,7 +5,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LLM_MODULE_OPTIONS } from './config/llm.constants';
-import { LLMController } from './llm.controller';
 import { LLMService } from './llm.service';
 import { AsyncLLMConfigType, LLMConfigType } from './types';
 
@@ -26,7 +25,6 @@ export class LLMModule {
   static forRoot(options: LLMConfigType): DynamicModule {
     return {
       module: LLMModule,
-      controllers: [LLMController],
       providers: [
         {
           provide: LLM_MODULE_OPTIONS,
@@ -48,7 +46,6 @@ export class LLMModule {
     return {
       module: LLMModule,
       imports: options.imports || [],
-      controllers: [LLMController],
       providers: [
         {
           provide: LLM_MODULE_OPTIONS,

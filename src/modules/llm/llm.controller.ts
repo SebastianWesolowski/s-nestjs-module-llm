@@ -34,23 +34,23 @@ export class LLMController {
   @ApiOperation({ summary: 'Generuje tekst na podstawie wiadomości' })
   @ApiBody({ type: CompletionDto, examples: completionExamples })
   async completion(@Body() completionDto: CompletionDto): Promise<ChatCompletionResponseType> {
-    const result = await this.llmService.completion(
-      completionDto.messages,
-      completionDto.model,
-      completionDto.stream,
-      completionDto.jsonMode
-    );
+    const result = await this.llmService.completion({
+      messages: completionDto.messages,
+      model: completionDto.model,
+      stream: completionDto.stream,
+      jsonMode: completionDto.jsonMode,
+    });
 
     // Konwersja wyniku na ChatCompletionResponse
     if ('choices' in result) {
       return {
-        messages: result.choices.map((choice) => ({
+        messages: (result.choices as Array<{ message: { role: string; content?: string } }>).map((choice) => ({
           role: choice.message.role,
           content: choice.message.content || '',
         })),
-        totalTokens: result.usage?.total_tokens,
-        promptTokens: result.usage?.prompt_tokens,
-        completionTokens: result.usage?.completion_tokens,
+        totalTokens: (result as { usage?: { total_tokens?: number } }).usage?.total_tokens,
+        promptTokens: (result as { usage?: { prompt_tokens?: number } }).usage?.prompt_tokens,
+        completionTokens: (result as { usage?: { completion_tokens?: number } }).usage?.completion_tokens,
         fullResponse: result,
       };
     }
@@ -90,12 +90,12 @@ export class LLMController {
     return new Observable<MessageEvent>((subscriber) => {
       void (async () => {
         try {
-          const stream = await this.llmService.completion(
-            completionDto.messages,
-            completionDto.model,
-            true,
-            completionDto.jsonMode
-          );
+          const stream = await this.llmService.completion({
+            messages: completionDto.messages,
+            model: completionDto.model,
+            stream: true,
+            jsonMode: completionDto.jsonMode,
+          });
 
           if (stream && Symbol.asyncIterator in stream) {
             let fullContent = '';

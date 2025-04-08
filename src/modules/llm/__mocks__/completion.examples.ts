@@ -25,6 +25,8 @@ export const completionExamples: Record<string, { value: CompletionDto }> = {
         },
       ],
       model: 'gpt-4o',
+      stream: false,
+      jsonMode: false,
     },
   },
   'Przykład z asystentem': {

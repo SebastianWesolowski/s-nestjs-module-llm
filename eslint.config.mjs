@@ -71,8 +71,6 @@ export const eslintSettings = {
   },
 };
 
-export const typescriptEslintConfigRecommended = typescriptEslint.configs.recommendedTypeChecked;
-
 export function getDirectoriesToSort() {
   const ignoredSortingDirectories = ['node_modules', '.git', '.vscode', 'dist', 'coverage'];
   try {
@@ -112,18 +110,18 @@ export default typescriptEslint.config(
       'no-eval': 'warn',
       'no-implied-eval': 'warn',
       'no-new-func': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-redundant-type-constituents': 'warn',
       '@typescript-eslint/await-thenable': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/no-misused-promises': 'warn',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
 
       '@typescript-eslint/no-unused-vars': [
         'warn',

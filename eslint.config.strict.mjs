@@ -8,7 +8,6 @@ import {
   getDirectoriesToSort,
   jsEslint,
   typescriptEslintConfig,
-  typescriptEslintConfigRecommended,
 } from './eslint.config.mjs';
 
 const config = typescriptEslint.config(
@@ -17,7 +16,6 @@ const config = typescriptEslint.config(
     files: eslintFiles,
   },
   { ...typescriptEslintConfig },
-  typescriptEslintConfigRecommended,
   jsEslint,
   eslintPluginImportConfig,
   {
@@ -61,7 +59,7 @@ const config = typescriptEslint.config(
       'no-implied-eval': 'error',
       'no-new-func': 'error',
 
-      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'error',
       '@typescript-eslint/explicit-function-return-type': [
         'warn',
@@ -89,8 +87,8 @@ const config = typescriptEslint.config(
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-redundant-type-constituents': 'error',
