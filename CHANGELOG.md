@@ -1,3 +1,10 @@
+## [1.0.0-dev.5](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.4...v1.0.0-dev.5) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 remove private property in package.json ([bfce9cd](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/bfce9cde06bdae8815db39dfe6cc0ff104e5715e))
+
 ## [1.0.0-dev.4](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.3...v1.0.0-dev.4) (April 08, 2025)
 
 
