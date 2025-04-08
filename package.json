@@ -2,7 +2,7 @@
   "name": "s-nestjs-module-llm",
   "version": "0.0.0-development",
   "description": "A submodule for nestjs, with features like a llm",
-  "private": true,
+  "private": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
