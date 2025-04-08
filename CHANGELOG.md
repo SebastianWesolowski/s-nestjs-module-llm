@@ -1,3 +1,11 @@
+## [1.0.0-dev.3](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.2...v1.0.0-dev.3) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 gH actions script release ([5ecab7a](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/5ecab7a2435a76e3573b8419e3ebbabd818f025b))
+- 🐛 github actions token acces ([0f6b41d](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/0f6b41da9a38f92595d8f746a85253cb3701b187))
+
 ## [1.0.0-dev.2](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.1...v1.0.0-dev.2) (April 08, 2025)
 
 
