@@ -1,3 +1,11 @@
+## [1.0.0-dev.2](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.1...v1.0.0-dev.2) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 automate release ([b2f936c](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/b2f936c0cf4bb9e7ad8786729abbae2194635609))
+- Merge pull request #1 from SebastianWesolowski/dev ([1d3c19e](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/1d3c19e6115b7b603ce89bcd0519e099c8765d68))
+
 ## 1.0.0-dev.1 (April 08, 2025)
 
 ### [SC-158](https://linear.app/wesolowskidev/issue/SC-158)
