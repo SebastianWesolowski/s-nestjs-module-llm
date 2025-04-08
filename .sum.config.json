@@ -1,0 +1,28 @@
+{
+  "templateCatalogName": "templateCatalog",
+  "sumCatalog": "./.sum/",
+  "sUpdaterVersion": "^1.0.0-dev.48",
+  "availableSUMSuffix": [
+    "-default.md",
+    "-custom.md",
+    "-extend.md"
+  ],
+  "availableSUMKeySuffix": [
+    "defaultFile",
+    "customFile",
+    "extendFile"
+  ],
+  "sumFileMapConfigFileName": "repositoryMap.json",
+  "sumIgnoreFilePath": "./.sumignore",
+  "sumIgnoreFileName": ".sumignore",
+  "sumFileMapConfig": "./.sum/repositoryMap.json",
+  "projectCatalog": "./",
+  "temporaryFolder": "./.sum/temporary/",
+  "sumConfigFileName": ".sum.config.json",
+  "sumConfigFilePath": "./.sum.config.json",
+  "remoteRootRepositoryUrl": "https://raw.githubusercontent.com/SebastianWesolowski/s-template/dev/templates/nestjsModule",
+  "remoteRepository": "https://github.com/SebastianWesolowski/s-template/tree/dev/templates/nestjsModule",
+  "remoteFileMapURL": "https://raw.githubusercontent.com/SebastianWesolowski/s-template/dev/templates/nestjsModule/templateCatalog/repositoryMap.json",
+  "isDebug": false,
+  "_": []
+}

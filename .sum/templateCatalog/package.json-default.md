@@ -1,7 +1,7 @@
 {
-  "name": "s-nestjs-module-llm",
+  "name": "placeholder-repo-name",
   "version": "0.0.0-development",
-  "description": "A submodule for nestjs, with features like a llm",
+  "description": "{{A template for creating ...}}",
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -64,18 +64,15 @@
     "update-template:build": "s-build --remoteRepository='https://github.com/SebastianWesolowski/s-template/tree/dev/templates/nestjsModule'"
   },
   "dependencies": {
-    "@anatine/zod-nestjs": "^2.0.10",
     "@nestjs/common": "^11.0.12",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^11.0.12",
     "@nestjs/platform-express": "^11.0.12",
     "@nestjs/swagger": "^11.0.7",
     "@types/node": "^22.13.1",
-    "class-validator": "^0.14.1",
     "cpy-cli": "^5.0.0",
     "fs-extra": "^11.2.0",
     "npm-run-all": "^4.1.5",
-    "openai": "^4.91.0",
     "openapi3-ts": "^4.4.0",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
@@ -83,8 +80,6 @@
     "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "@anatine/zod-mock": "^3.13.5",
-    "@anatine/zod-openapi": "^2.2.7",
     "@babel/core": "^7.23.3",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
@@ -153,27 +148,25 @@
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
-    "typescript-eslint": "^8.21.0",
-    "zod": "^3.22.4",
-    "zod-to-ts": "^1.2.0"
+    "typescript-eslint": "^8.21.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm.git"
+    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}.git"
   },
   "license": "MIT",
   "author": {
-    "name": "Sebastian Wesolowski",
-    "email": "SebastianWesolowski@users.noreply.github.com",
-    "url": "https://github.com/SebastianWesolowski"
+    "name": "{{PLACEHOLDER_FULL_NAME}}",
+    "email": "{{PLACEHOLDER_GITHUB_USER}}@users.noreply.github.com",
+    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}"
   },
   "engines": {
-    "node": ">=20.17.0"
+    "node": ">=0.0.0"
   },
   "bugs": {
-    "url": "https://github.com/SebastianWesolowski/s-nestjs-module-llm/issues"
+    "url": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}/issues"
   },
-  "homepage": "https://github.com/SebastianWesolowski/s-nestjs-module-llm#readme",
+  "homepage": "https://github.com/{{PLACEHOLDER_GITHUB_USER}}/{{PLACEHOLDER_REPO_NAME}}#readme",
   "config": {
     "commitizen": {
       "path": "node_modules/cz-git"

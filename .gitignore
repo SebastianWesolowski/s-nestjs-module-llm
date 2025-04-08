@@ -1,0 +1,69 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+!.env.mjs
+!.env.*example
+
+# vercel
+.vercel
+
+# typescript
+tsconfig.tsbuildinfo
+
+# testing
+/test-results
+/playwright-report
+/playwright/.cache
+/reports
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# public
+/public/assets
+/public/sitemap*
+/public/robots.txt
+
+# storybook
+/storybook-static
+
+# husky
+.husky/_
+
+# cache files
+.stylelintcache
+.eslintcache
+.prettier-cache
+.npm
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+
+!templateCatalog/*
+
+# build
+dist

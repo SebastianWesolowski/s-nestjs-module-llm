@@ -1,0 +1,1718 @@
+{
+  "projectCatalog": "./templates/nestjsModule",
+  "templateCatalogName": "templateCatalog",
+  "templateCatalogPath": "./templates/nestjsModule/templateCatalog",
+  "repositoryMapFileName": "repositoryMap.json",
+  "repositoryMapFilePath": "./templates/nestjsModule/templateCatalog/repositoryMap.json",
+  "bumpVersion": true,
+  "isDebug": false,
+  "_": [],
+  "templateVersion": "1.0.3",
+  "fileMap": [
+    "templateCatalog/.commitlintrc.js-default.md",
+    "templateCatalog/.cursorignore-default.md",
+    "templateCatalog/.cursorrules-default.md",
+    "templateCatalog/.editorconfig-default.md",
+    "templateCatalog/.env.development.example-default.md",
+    "templateCatalog/.env.example-default.md",
+    "templateCatalog/.env.local.example-default.md",
+    "templateCatalog/.env.prod.example-default.md",
+    "templateCatalog/.gitattributes-default.md",
+    "templateCatalog/.github/FUNDING.yml-default.md",
+    "templateCatalog/.github/ISSUE_TEMPLATE/bug_report.md-default.md",
+    "templateCatalog/.github/ISSUE_TEMPLATE/feature_request.md-default.md",
+    "templateCatalog/.github/PULL_REQUEST_TEMPLATE.md-default.md",
+    "templateCatalog/.github/workflows/README.md-default.md",
+    "templateCatalog/.github/workflows/ci.yml-default.md",
+    "templateCatalog/.github/workflows/release.yml-default.md",
+    "templateCatalog/.github/workflows/reusable-build.yml-default.md",
+    "templateCatalog/.github/workflows/reusable-lint.yml-default.md",
+    "templateCatalog/.github/workflows/reusable-release.yml-default.md",
+    "templateCatalog/.github/workflows/reusable-setup.yml-default.md",
+    "templateCatalog/.github/workflows/reusable-test.yml-default.md",
+    "templateCatalog/.gitignore-default.md",
+    "templateCatalog/.husky/.gitignore-default.md",
+    "templateCatalog/.husky/README.md-default.md",
+    "templateCatalog/.husky/lint-staged.config.json-default.md",
+    "templateCatalog/.husky/post-merge-default.md",
+    "templateCatalog/.husky/pre-commit-default.md",
+    "templateCatalog/.husky/pre-push-default.md",
+    "templateCatalog/.husky/prepare-commit-msg-default.md",
+    "templateCatalog/.nvmrc-default.md",
+    "templateCatalog/.prettierignore-default.md",
+    "templateCatalog/.quokka-default.md",
+    "templateCatalog/.releaserc.js-default.md",
+    "templateCatalog/.vscode/extensions.json-default.md",
+    "templateCatalog/.vscode/settings.json-default.md",
+    "templateCatalog/@types/environment.d.ts-default.md",
+    "templateCatalog/@types/reset.d.ts-default.md",
+    "templateCatalog/LICENSE-default.md",
+    "templateCatalog/README.md-default.md",
+    "templateCatalog/docs/HowToAutoDeploy.md-default.md",
+    "templateCatalog/docs/WayToWrok.md-default.md",
+    "templateCatalog/docs/knowProblems.md-default.md",
+    "templateCatalog/eslint.config.mjs-default.md",
+    "templateCatalog/eslint.config.strict.mjs-default.md",
+    "templateCatalog/jest.config.js-default.md",
+    "templateCatalog/jest.setup.js-default.md",
+    "templateCatalog/nest-cli.json-default.md",
+    "templateCatalog/package.json-default.md",
+    "templateCatalog/prettier.config.js-default.md",
+    "templateCatalog/src/index.ts-default.md",
+    "templateCatalog/src/main.ts-default.md",
+    "templateCatalog/src/my-module.module.ts-default.md",
+    "templateCatalog/src/my-service.ts-default.md",
+    "templateCatalog/src/test/jest-e2e.json-default.md",
+    "templateCatalog/todo.md-default.md",
+    "templateCatalog/tools/addDependency.js-default.md",
+    "templateCatalog/tools/addModuleType.js-default.md",
+    "templateCatalog/tools/customize/customize.config.ts-default.md",
+    "templateCatalog/tools/customize/customize.example.config.ts-default.md",
+    "templateCatalog/tools/customize/customize.ts-default.md",
+    "templateCatalog/tools/customize/type.ts-default.md",
+    "templateCatalog/tools/ngrok-auth.js-default.md",
+    "templateCatalog/tools/snapshotUtils.ts-default.md",
+    "templateCatalog/tsconfig.build.json-default.md",
+    "templateCatalog/tsconfig.json-default.md",
+    "templateCatalog/yarn.lock-default.md"
+  ],
+  "templateFileList": [
+    "./.commitlintrc.js",
+    "./.cursorignore",
+    "./.cursorrules",
+    "./.editorconfig",
+    "./.env.development.example",
+    "./.env.example",
+    "./.env.local.example",
+    "./.env.prod.example",
+    "./.gitattributes",
+    "./.github/FUNDING.yml",
+    "./.github/ISSUE_TEMPLATE/bug_report.md",
+    "./.github/ISSUE_TEMPLATE/feature_request.md",
+    "./.github/PULL_REQUEST_TEMPLATE.md",
+    "./.github/assets/couplingGraph-node.png",
+    "./.github/assets/githubActions.png",
+    "./.github/assets/heroImageReposytory-nest.png",
+    "./.github/assets/ngrok.png",
+    "./.github/workflows/README.md",
+    "./.github/workflows/ci.yml",
+    "./.github/workflows/release.yml",
+    "./.github/workflows/reusable-build.yml",
+    "./.github/workflows/reusable-lint.yml",
+    "./.github/workflows/reusable-release.yml",
+    "./.github/workflows/reusable-setup.yml",
+    "./.github/workflows/reusable-test.yml",
+    "./.gitignore",
+    "./.husky/.gitignore",
+    "./.husky/README.md",
+    "./.husky/lint-staged.config.json",
+    "./.husky/post-merge",
+    "./.husky/pre-commit",
+    "./.husky/pre-push",
+    "./.husky/prepare-commit-msg",
+    "./.nvmrc",
+    "./.prettierignore",
+    "./.quokka",
+    "./.releaserc.js",
+    "./.vscode/extensions.json",
+    "./.vscode/settings.json",
+    "./@types/environment.d.ts",
+    "./@types/reset.d.ts",
+    "./LICENSE",
+    "./README.md",
+    "./docs/HowToAutoDeploy.md",
+    "./docs/WayToWrok.md",
+    "./docs/actions-secrets.png",
+    "./docs/cz-problem.png",
+    "./docs/gh.png",
+    "./docs/gh_token_permission.png",
+    "./docs/knowProblems.md",
+    "./eslint.config.mjs",
+    "./eslint.config.strict.mjs",
+    "./jest.config.js",
+    "./jest.setup.js",
+    "./nest-cli.json",
+    "./package.json",
+    "./prettier.config.js",
+    "./src/index.ts",
+    "./src/main.ts",
+    "./src/my-module.module.ts",
+    "./src/my-service.ts",
+    "./src/test/jest-e2e.json",
+    "./todo.md",
+    "./tools/addDependency.js",
+    "./tools/addModuleType.js",
+    "./tools/customize/customize.config.ts",
+    "./tools/customize/customize.example.config.ts",
+    "./tools/customize/customize.ts",
+    "./tools/customize/type.ts",
+    "./tools/ngrok-auth.js",
+    "./tools/snapshotUtils.ts",
+    "./tsconfig.build.json",
+    "./tsconfig.json",
+    "./yarn.lock"
+  ],
+  "rootPathFileList": [
+    "./templates/nestjsModule/.commitlintrc.js",
+    "./templates/nestjsModule/.cursorignore",
+    "./templates/nestjsModule/.cursorrules",
+    "./templates/nestjsModule/.editorconfig",
+    "./templates/nestjsModule/.env.development.example",
+    "./templates/nestjsModule/.env.example",
+    "./templates/nestjsModule/.env.local.example",
+    "./templates/nestjsModule/.env.prod.example",
+    "./templates/nestjsModule/.gitattributes",
+    "./templates/nestjsModule/.github/FUNDING.yml",
+    "./templates/nestjsModule/.github/ISSUE_TEMPLATE/bug_report.md",
+    "./templates/nestjsModule/.github/ISSUE_TEMPLATE/feature_request.md",
+    "./templates/nestjsModule/.github/PULL_REQUEST_TEMPLATE.md",
+    "./templates/nestjsModule/.github/workflows/README.md",
+    "./templates/nestjsModule/.github/workflows/ci.yml",
+    "./templates/nestjsModule/.github/workflows/release.yml",
+    "./templates/nestjsModule/.github/workflows/reusable-build.yml",
+    "./templates/nestjsModule/.github/workflows/reusable-lint.yml",
+    "./templates/nestjsModule/.github/workflows/reusable-release.yml",
+    "./templates/nestjsModule/.github/workflows/reusable-setup.yml",
+    "./templates/nestjsModule/.github/workflows/reusable-test.yml",
+    "./templates/nestjsModule/.gitignore",
+    "./templates/nestjsModule/.husky/.gitignore",
+    "./templates/nestjsModule/.husky/README.md",
+    "./templates/nestjsModule/.husky/lint-staged.config.json",
+    "./templates/nestjsModule/.husky/post-merge",
+    "./templates/nestjsModule/.husky/pre-commit",
+    "./templates/nestjsModule/.husky/pre-push",
+    "./templates/nestjsModule/.husky/prepare-commit-msg",
+    "./templates/nestjsModule/.nvmrc",
+    "./templates/nestjsModule/.prettierignore",
+    "./templates/nestjsModule/.quokka",
+    "./templates/nestjsModule/.releaserc.js",
+    "./templates/nestjsModule/.vscode/extensions.json",
+    "./templates/nestjsModule/.vscode/settings.json",
+    "./templates/nestjsModule/@types/environment.d.ts",
+    "./templates/nestjsModule/@types/reset.d.ts",
+    "./templates/nestjsModule/LICENSE",
+    "./templates/nestjsModule/README.md",
+    "./templates/nestjsModule/docs/HowToAutoDeploy.md",
+    "./templates/nestjsModule/docs/WayToWrok.md",
+    "./templates/nestjsModule/docs/knowProblems.md",
+    "./templates/nestjsModule/eslint.config.mjs",
+    "./templates/nestjsModule/eslint.config.strict.mjs",
+    "./templates/nestjsModule/jest.config.js",
+    "./templates/nestjsModule/jest.setup.js",
+    "./templates/nestjsModule/nest-cli.json",
+    "./templates/nestjsModule/package.json",
+    "./templates/nestjsModule/prettier.config.js",
+    "./templates/nestjsModule/src/index.ts",
+    "./templates/nestjsModule/src/main.ts",
+    "./templates/nestjsModule/src/my-module.module.ts",
+    "./templates/nestjsModule/src/my-service.ts",
+    "./templates/nestjsModule/src/test/jest-e2e.json",
+    "./templates/nestjsModule/todo.md",
+    "./templates/nestjsModule/tools/addDependency.js",
+    "./templates/nestjsModule/tools/addModuleType.js",
+    "./templates/nestjsModule/tools/customize/customize.config.ts",
+    "./templates/nestjsModule/tools/customize/customize.example.config.ts",
+    "./templates/nestjsModule/tools/customize/customize.ts",
+    "./templates/nestjsModule/tools/customize/type.ts",
+    "./templates/nestjsModule/tools/ngrok-auth.js",
+    "./templates/nestjsModule/tools/snapshotUtils.ts",
+    "./templates/nestjsModule/tsconfig.build.json",
+    "./templates/nestjsModule/tsconfig.json",
+    "./templates/nestjsModule/yarn.lock"
+  ],
+  "redOnlyFileList": [
+    ".github/assets/couplingGraph-node.png",
+    ".github/assets/githubActions.png",
+    ".github/assets/heroImageReposytory-nest.png",
+    ".github/assets/ngrok.png",
+    "docs/actions-secrets.png",
+    "docs/cz-problem.png",
+    "docs/gh.png",
+    "docs/gh_token_permission.png"
+  ],
+  "createdFileMap": [
+    "./.sum/templateCatalog/.commitlintrc.js-default.md",
+    ".commitlintrc.js",
+    "./.sum/templateCatalog/.cursorignore-default.md",
+    ".cursorignore",
+    "./.sum/templateCatalog/.cursorrules-default.md",
+    ".cursorrules",
+    "./.sum/templateCatalog/.editorconfig-default.md",
+    ".editorconfig",
+    "./.sum/templateCatalog/.env.development.example-default.md",
+    ".env.development.example",
+    "./.sum/templateCatalog/.env.example-default.md",
+    ".env.example",
+    "./.sum/templateCatalog/.env.local.example-default.md",
+    ".env.local.example",
+    "./.sum/templateCatalog/.env.prod.example-default.md",
+    ".env.prod.example",
+    "./.sum/templateCatalog/.gitattributes-default.md",
+    ".gitattributes",
+    "./.sum/templateCatalog/.github/FUNDING.yml-default.md",
+    "./.github/FUNDING.yml",
+    "./.sum/templateCatalog/.github/ISSUE_TEMPLATE/bug_report.md-default.md",
+    "./.github/ISSUE_TEMPLATE/bug_report.md",
+    "./.sum/templateCatalog/.github/ISSUE_TEMPLATE/feature_request.md-default.md",
+    "./.github/ISSUE_TEMPLATE/feature_request.md",
+    "./.sum/templateCatalog/.github/PULL_REQUEST_TEMPLATE.md-default.md",
+    "./.github/PULL_REQUEST_TEMPLATE.md",
+    "./.sum/templateCatalog/.github/workflows/README.md-default.md",
+    "./.github/workflows/README.md",
+    "./.sum/templateCatalog/.github/workflows/ci.yml-default.md",
+    "./.github/workflows/ci.yml",
+    "./.sum/templateCatalog/.github/workflows/release.yml-default.md",
+    "./.github/workflows/release.yml",
+    "./.sum/templateCatalog/.github/workflows/reusable-build.yml-default.md",
+    "./.github/workflows/reusable-build.yml",
+    "./.sum/templateCatalog/.github/workflows/reusable-lint.yml-default.md",
+    "./.github/workflows/reusable-lint.yml",
+    "./.sum/templateCatalog/.github/workflows/reusable-release.yml-default.md",
+    "./.github/workflows/reusable-release.yml",
+    "./.sum/templateCatalog/.github/workflows/reusable-setup.yml-default.md",
+    "./.github/workflows/reusable-setup.yml",
+    "./.sum/templateCatalog/.github/workflows/reusable-test.yml-default.md",
+    "./.github/workflows/reusable-test.yml",
+    "./.sum/templateCatalog/.gitignore-default.md",
+    ".gitignore",
+    "./.sum/templateCatalog/.husky/.gitignore-default.md",
+    "./.husky/.gitignore",
+    "./.sum/templateCatalog/.husky/README.md-default.md",
+    "./.husky/README.md",
+    "./.sum/templateCatalog/.husky/lint-staged.config.json-default.md",
+    "./.husky/lint-staged.config.json",
+    "./.sum/templateCatalog/.husky/post-merge-default.md",
+    "./.husky/post-merge",
+    "./.sum/templateCatalog/.husky/pre-commit-default.md",
+    "./.husky/pre-commit",
+    "./.sum/templateCatalog/.husky/pre-push-default.md",
+    "./.husky/pre-push",
+    "./.sum/templateCatalog/.husky/prepare-commit-msg-default.md",
+    "./.husky/prepare-commit-msg",
+    "./.sum/templateCatalog/.nvmrc-default.md",
+    ".nvmrc",
+    "./.sum/templateCatalog/.prettierignore-default.md",
+    ".prettierignore",
+    "./.sum/templateCatalog/.quokka-default.md",
+    ".quokka",
+    "./.sum/templateCatalog/.releaserc.js-default.md",
+    ".releaserc.js",
+    "./.sum/templateCatalog/.vscode/extensions.json-default.md",
+    "./.vscode/extensions.json",
+    "./.sum/templateCatalog/.vscode/settings.json-default.md",
+    "./.vscode/settings.json",
+    "./.sum/templateCatalog/@types/environment.d.ts-default.md",
+    "./@types/environment.d.ts",
+    "./.sum/templateCatalog/@types/reset.d.ts-default.md",
+    "./@types/reset.d.ts",
+    "./.sum/templateCatalog/LICENSE-default.md",
+    "LICENSE",
+    "./.sum/templateCatalog/README.md-default.md",
+    "README.md",
+    "./.sum/templateCatalog/docs/HowToAutoDeploy.md-default.md",
+    "./docs/HowToAutoDeploy.md",
+    "./.sum/templateCatalog/docs/WayToWrok.md-default.md",
+    "./docs/WayToWrok.md",
+    "./.sum/templateCatalog/docs/knowProblems.md-default.md",
+    "./docs/knowProblems.md",
+    "./.sum/templateCatalog/eslint.config.mjs-default.md",
+    "eslint.config.mjs",
+    "./.sum/templateCatalog/eslint.config.strict.mjs-default.md",
+    "eslint.config.strict.mjs",
+    "./.sum/templateCatalog/jest.config.js-default.md",
+    "jest.config.js",
+    "./.sum/templateCatalog/jest.setup.js-default.md",
+    "jest.setup.js",
+    "./.sum/templateCatalog/nest-cli.json-default.md",
+    "nest-cli.json",
+    "./.sum/templateCatalog/package.json-default.md",
+    "package.json",
+    "./.sum/templateCatalog/prettier.config.js-default.md",
+    "prettier.config.js",
+    "./.sum/templateCatalog/src/index.ts-default.md",
+    "./src/index.ts",
+    "./.sum/templateCatalog/src/main.ts-default.md",
+    "./src/main.ts",
+    "./.sum/templateCatalog/src/my-module.module.ts-default.md",
+    "./src/my-module.module.ts",
+    "./.sum/templateCatalog/src/my-service.ts-default.md",
+    "./src/my-service.ts",
+    "./.sum/templateCatalog/src/test/jest-e2e.json-default.md",
+    "./src/test/jest-e2e.json",
+    "./.sum/templateCatalog/todo.md-default.md",
+    "./.sum/templateCatalog/tools/addDependency.js-default.md",
+    "./tools/addDependency.js",
+    "./.sum/templateCatalog/tools/addModuleType.js-default.md",
+    "./tools/addModuleType.js",
+    "./.sum/templateCatalog/tools/customize/customize.config.ts-default.md",
+    "./tools/customize/customize.config.ts",
+    "./.sum/templateCatalog/tools/customize/customize.example.config.ts-default.md",
+    "./tools/customize/customize.example.config.ts",
+    "./.sum/templateCatalog/tools/customize/customize.ts-default.md",
+    "./tools/customize/customize.ts",
+    "./.sum/templateCatalog/tools/customize/type.ts-default.md",
+    "./tools/customize/type.ts",
+    "./.sum/templateCatalog/tools/ngrok-auth.js-default.md",
+    "./tools/ngrok-auth.js",
+    "./.sum/templateCatalog/tools/snapshotUtils.ts-default.md",
+    "./tools/snapshotUtils.ts",
+    "./.sum/templateCatalog/tsconfig.build.json-default.md",
+    "tsconfig.build.json",
+    "./.sum/templateCatalog/tsconfig.json-default.md",
+    "tsconfig.json",
+    "./.sum/templateCatalog/yarn.lock-default.md",
+    "yarn.lock",
+    "./.github/assets/couplingGraph-node.png",
+    "./.github/assets/githubActions.png",
+    "./.github/assets/heroImageReposytory-nest.png",
+    "./.github/assets/ngrok.png",
+    "./docs/actions-secrets.png",
+    "./docs/cz-problem.png",
+    "./docs/gh.png",
+    "./docs/gh_token_permission.png"
+  ],
+  "sumFileMap": {
+    ".commitlintrc.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".commitlintrc.js",
+        "realFilePath": ".commitlintrc.js",
+        "realPath": "./.commitlintrc.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.commitlintrc.js-default.md",
+        "realFilePath": ".commitlintrc.js",
+        "realPath": "./.commitlintrc.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.commitlintrc.js-default.md"
+      }
+    },
+    ".cursorignore": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".cursorignore",
+        "realFilePath": ".cursorignore",
+        "realPath": "./.cursorignore",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.cursorignore-default.md",
+        "realFilePath": ".cursorignore",
+        "realPath": "./.cursorignore",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.cursorignore-default.md"
+      }
+    },
+    ".cursorrules": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".cursorrules",
+        "realFilePath": ".cursorrules",
+        "realPath": "./.cursorrules",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.cursorrules-default.md",
+        "realFilePath": ".cursorrules",
+        "realPath": "./.cursorrules",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.cursorrules-default.md"
+      }
+    },
+    ".editorconfig": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".editorconfig",
+        "realFilePath": ".editorconfig",
+        "realPath": "./.editorconfig",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.editorconfig-default.md",
+        "realFilePath": ".editorconfig",
+        "realPath": "./.editorconfig",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.editorconfig-default.md"
+      }
+    },
+    ".env.development.example": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".env.development.example",
+        "realFilePath": ".env.development.example",
+        "realPath": "./.env.development.example",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.env.development.example-default.md",
+        "realFilePath": ".env.development.example",
+        "realPath": "./.env.development.example",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.env.development.example-default.md"
+      }
+    },
+    ".env.example": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".env.example",
+        "realFilePath": ".env.example",
+        "realPath": "./.env.example",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.env.example-default.md",
+        "realFilePath": ".env.example",
+        "realPath": "./.env.example",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.env.example-default.md"
+      }
+    },
+    ".env.local.example": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".env.local.example",
+        "realFilePath": ".env.local.example",
+        "realPath": "./.env.local.example",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.env.local.example-default.md",
+        "realFilePath": ".env.local.example",
+        "realPath": "./.env.local.example",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.env.local.example-default.md"
+      }
+    },
+    ".env.prod.example": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".env.prod.example",
+        "realFilePath": ".env.prod.example",
+        "realPath": "./.env.prod.example",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.env.prod.example-default.md",
+        "realFilePath": ".env.prod.example",
+        "realPath": "./.env.prod.example",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.env.prod.example-default.md"
+      }
+    },
+    ".gitattributes": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".gitattributes",
+        "realFilePath": ".gitattributes",
+        "realPath": "./.gitattributes",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.gitattributes-default.md",
+        "realFilePath": ".gitattributes",
+        "realPath": "./.gitattributes",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.gitattributes-default.md"
+      }
+    },
+    ".github/FUNDING.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/FUNDING.yml",
+        "realFilePath": ".github/FUNDING.yml",
+        "realPath": "./FUNDING.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/FUNDING.yml-default.md",
+        "realFilePath": ".github/FUNDING.yml",
+        "realPath": "./.github/FUNDING.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/FUNDING.yml-default.md"
+      }
+    },
+    ".github/ISSUE_TEMPLATE/bug_report.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/ISSUE_TEMPLATE/bug_report.md",
+        "realFilePath": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "realPath": "./bug_report.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/ISSUE_TEMPLATE/bug_report.md-default.md",
+        "realFilePath": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "realPath": "./.github/ISSUE_TEMPLATE/bug_report.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/ISSUE_TEMPLATE/bug_report.md-default.md"
+      }
+    },
+    ".github/ISSUE_TEMPLATE/feature_request.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/ISSUE_TEMPLATE/feature_request.md",
+        "realFilePath": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "realPath": "./feature_request.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/ISSUE_TEMPLATE/feature_request.md-default.md",
+        "realFilePath": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "realPath": "./.github/ISSUE_TEMPLATE/feature_request.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/ISSUE_TEMPLATE/feature_request.md-default.md"
+      }
+    },
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/PULL_REQUEST_TEMPLATE.md",
+        "realFilePath": ".github/PULL_REQUEST_TEMPLATE.md",
+        "realPath": "./PULL_REQUEST_TEMPLATE.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/PULL_REQUEST_TEMPLATE.md-default.md",
+        "realFilePath": ".github/PULL_REQUEST_TEMPLATE.md",
+        "realPath": "./.github/PULL_REQUEST_TEMPLATE.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/PULL_REQUEST_TEMPLATE.md-default.md"
+      }
+    },
+    ".github/workflows/README.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/README.md",
+        "realFilePath": ".github/workflows/README.md",
+        "realPath": "./README.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/README.md-default.md",
+        "realFilePath": ".github/workflows/README.md",
+        "realPath": "./.github/workflows/README.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/README.md-default.md"
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/ci.yml",
+        "realFilePath": ".github/workflows/ci.yml",
+        "realPath": "./ci.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/ci.yml-default.md",
+        "realFilePath": ".github/workflows/ci.yml",
+        "realPath": "./.github/workflows/ci.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/ci.yml-default.md"
+      }
+    },
+    ".github/workflows/release.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/release.yml",
+        "realFilePath": ".github/workflows/release.yml",
+        "realPath": "./release.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/release.yml-default.md",
+        "realFilePath": ".github/workflows/release.yml",
+        "realPath": "./.github/workflows/release.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/release.yml-default.md"
+      }
+    },
+    ".github/workflows/reusable-build.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/reusable-build.yml",
+        "realFilePath": ".github/workflows/reusable-build.yml",
+        "realPath": "./reusable-build.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/reusable-build.yml-default.md",
+        "realFilePath": ".github/workflows/reusable-build.yml",
+        "realPath": "./.github/workflows/reusable-build.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/reusable-build.yml-default.md"
+      }
+    },
+    ".github/workflows/reusable-lint.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/reusable-lint.yml",
+        "realFilePath": ".github/workflows/reusable-lint.yml",
+        "realPath": "./reusable-lint.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/reusable-lint.yml-default.md",
+        "realFilePath": ".github/workflows/reusable-lint.yml",
+        "realPath": "./.github/workflows/reusable-lint.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/reusable-lint.yml-default.md"
+      }
+    },
+    ".github/workflows/reusable-release.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/reusable-release.yml",
+        "realFilePath": ".github/workflows/reusable-release.yml",
+        "realPath": "./reusable-release.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/reusable-release.yml-default.md",
+        "realFilePath": ".github/workflows/reusable-release.yml",
+        "realPath": "./.github/workflows/reusable-release.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/reusable-release.yml-default.md"
+      }
+    },
+    ".github/workflows/reusable-setup.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/reusable-setup.yml",
+        "realFilePath": ".github/workflows/reusable-setup.yml",
+        "realPath": "./reusable-setup.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/reusable-setup.yml-default.md",
+        "realFilePath": ".github/workflows/reusable-setup.yml",
+        "realPath": "./.github/workflows/reusable-setup.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/reusable-setup.yml-default.md"
+      }
+    },
+    ".github/workflows/reusable-test.yml": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/workflows/reusable-test.yml",
+        "realFilePath": ".github/workflows/reusable-test.yml",
+        "realPath": "./reusable-test.yml",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.github/workflows/reusable-test.yml-default.md",
+        "realFilePath": ".github/workflows/reusable-test.yml",
+        "realPath": "./.github/workflows/reusable-test.yml",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.github/workflows/reusable-test.yml-default.md"
+      }
+    },
+    ".gitignore": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".gitignore",
+        "realFilePath": ".gitignore",
+        "realPath": "./.gitignore",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.gitignore-default.md",
+        "realFilePath": ".gitignore",
+        "realPath": "./.gitignore",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.gitignore-default.md"
+      }
+    },
+    ".husky/.gitignore": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/.gitignore",
+        "realFilePath": ".husky/.gitignore",
+        "realPath": "./.gitignore",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/.gitignore-default.md",
+        "realFilePath": ".husky/.gitignore",
+        "realPath": "./.husky/.gitignore",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/.gitignore-default.md"
+      }
+    },
+    ".husky/README.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/README.md",
+        "realFilePath": ".husky/README.md",
+        "realPath": "./README.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/README.md-default.md",
+        "realFilePath": ".husky/README.md",
+        "realPath": "./.husky/README.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/README.md-default.md"
+      }
+    },
+    ".husky/lint-staged.config.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/lint-staged.config.json",
+        "realFilePath": ".husky/lint-staged.config.json",
+        "realPath": "./lint-staged.config.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/lint-staged.config.json-default.md",
+        "realFilePath": ".husky/lint-staged.config.json",
+        "realPath": "./.husky/lint-staged.config.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/lint-staged.config.json-default.md"
+      }
+    },
+    ".husky/post-merge": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/post-merge",
+        "realFilePath": ".husky/post-merge",
+        "realPath": "./post-merge",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/post-merge-default.md",
+        "realFilePath": ".husky/post-merge",
+        "realPath": "./.husky/post-merge",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/post-merge-default.md"
+      }
+    },
+    ".husky/pre-commit": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/pre-commit",
+        "realFilePath": ".husky/pre-commit",
+        "realPath": "./pre-commit",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/pre-commit-default.md",
+        "realFilePath": ".husky/pre-commit",
+        "realPath": "./.husky/pre-commit",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/pre-commit-default.md"
+      }
+    },
+    ".husky/pre-push": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/pre-push",
+        "realFilePath": ".husky/pre-push",
+        "realPath": "./pre-push",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/pre-push-default.md",
+        "realFilePath": ".husky/pre-push",
+        "realPath": "./.husky/pre-push",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/pre-push-default.md"
+      }
+    },
+    ".husky/prepare-commit-msg": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.husky/prepare-commit-msg",
+        "realFilePath": ".husky/prepare-commit-msg",
+        "realPath": "./prepare-commit-msg",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.husky/prepare-commit-msg-default.md",
+        "realFilePath": ".husky/prepare-commit-msg",
+        "realPath": "./.husky/prepare-commit-msg",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.husky/prepare-commit-msg-default.md"
+      }
+    },
+    ".nvmrc": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".nvmrc",
+        "realFilePath": ".nvmrc",
+        "realPath": "./.nvmrc",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.nvmrc-default.md",
+        "realFilePath": ".nvmrc",
+        "realPath": "./.nvmrc",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.nvmrc-default.md"
+      }
+    },
+    ".prettierignore": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".prettierignore",
+        "realFilePath": ".prettierignore",
+        "realPath": "./.prettierignore",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.prettierignore-default.md",
+        "realFilePath": ".prettierignore",
+        "realPath": "./.prettierignore",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.prettierignore-default.md"
+      }
+    },
+    ".quokka": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".quokka",
+        "realFilePath": ".quokka",
+        "realPath": "./.quokka",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.quokka-default.md",
+        "realFilePath": ".quokka",
+        "realPath": "./.quokka",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.quokka-default.md"
+      }
+    },
+    ".releaserc.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": ".releaserc.js",
+        "realFilePath": ".releaserc.js",
+        "realPath": "./.releaserc.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.releaserc.js-default.md",
+        "realFilePath": ".releaserc.js",
+        "realPath": "./.releaserc.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.releaserc.js-default.md"
+      }
+    },
+    ".vscode/extensions.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.vscode/extensions.json",
+        "realFilePath": ".vscode/extensions.json",
+        "realPath": "./extensions.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.vscode/extensions.json-default.md",
+        "realFilePath": ".vscode/extensions.json",
+        "realPath": "./.vscode/extensions.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.vscode/extensions.json-default.md"
+      }
+    },
+    ".vscode/settings.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.vscode/settings.json",
+        "realFilePath": ".vscode/settings.json",
+        "realPath": "./settings.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/.vscode/settings.json-default.md",
+        "realFilePath": ".vscode/settings.json",
+        "realPath": "./.vscode/settings.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/.vscode/settings.json-default.md"
+      }
+    },
+    "@types/environment.d.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./@types/environment.d.ts",
+        "realFilePath": "@types/environment.d.ts",
+        "realPath": "./environment.d.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/@types/environment.d.ts-default.md",
+        "realFilePath": "@types/environment.d.ts",
+        "realPath": "./@types/environment.d.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/@types/environment.d.ts-default.md"
+      }
+    },
+    "@types/reset.d.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./@types/reset.d.ts",
+        "realFilePath": "@types/reset.d.ts",
+        "realPath": "./reset.d.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/@types/reset.d.ts-default.md",
+        "realFilePath": "@types/reset.d.ts",
+        "realPath": "./@types/reset.d.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/@types/reset.d.ts-default.md"
+      }
+    },
+    "LICENSE": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "LICENSE",
+        "realFilePath": "LICENSE",
+        "realPath": "./LICENSE",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/LICENSE-default.md",
+        "realFilePath": "LICENSE",
+        "realPath": "./LICENSE",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/LICENSE-default.md"
+      }
+    },
+    "README.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "README.md",
+        "realFilePath": "README.md",
+        "realPath": "./README.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/README.md-default.md",
+        "realFilePath": "README.md",
+        "realPath": "./README.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/README.md-default.md"
+      }
+    },
+    "docs/HowToAutoDeploy.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/HowToAutoDeploy.md",
+        "realFilePath": "docs/HowToAutoDeploy.md",
+        "realPath": "./HowToAutoDeploy.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/docs/HowToAutoDeploy.md-default.md",
+        "realFilePath": "docs/HowToAutoDeploy.md",
+        "realPath": "./docs/HowToAutoDeploy.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/docs/HowToAutoDeploy.md-default.md"
+      }
+    },
+    "docs/WayToWrok.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/WayToWrok.md",
+        "realFilePath": "docs/WayToWrok.md",
+        "realPath": "./WayToWrok.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/docs/WayToWrok.md-default.md",
+        "realFilePath": "docs/WayToWrok.md",
+        "realPath": "./docs/WayToWrok.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/docs/WayToWrok.md-default.md"
+      }
+    },
+    "docs/knowProblems.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/knowProblems.md",
+        "realFilePath": "docs/knowProblems.md",
+        "realPath": "./knowProblems.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/docs/knowProblems.md-default.md",
+        "realFilePath": "docs/knowProblems.md",
+        "realPath": "./docs/knowProblems.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/docs/knowProblems.md-default.md"
+      }
+    },
+    "eslint.config.mjs": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "eslint.config.mjs",
+        "realFilePath": "eslint.config.mjs",
+        "realPath": "./eslint.config.mjs",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/eslint.config.mjs-default.md",
+        "realFilePath": "eslint.config.mjs",
+        "realPath": "./eslint.config.mjs",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/eslint.config.mjs-default.md"
+      }
+    },
+    "eslint.config.strict.mjs": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "eslint.config.strict.mjs",
+        "realFilePath": "eslint.config.strict.mjs",
+        "realPath": "./eslint.config.strict.mjs",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/eslint.config.strict.mjs-default.md",
+        "realFilePath": "eslint.config.strict.mjs",
+        "realPath": "./eslint.config.strict.mjs",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/eslint.config.strict.mjs-default.md"
+      }
+    },
+    "jest.config.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "jest.config.js",
+        "realFilePath": "jest.config.js",
+        "realPath": "./jest.config.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/jest.config.js-default.md",
+        "realFilePath": "jest.config.js",
+        "realPath": "./jest.config.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/jest.config.js-default.md"
+      }
+    },
+    "jest.setup.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "jest.setup.js",
+        "realFilePath": "jest.setup.js",
+        "realPath": "./jest.setup.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/jest.setup.js-default.md",
+        "realFilePath": "jest.setup.js",
+        "realPath": "./jest.setup.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/jest.setup.js-default.md"
+      }
+    },
+    "nest-cli.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "nest-cli.json",
+        "realFilePath": "nest-cli.json",
+        "realPath": "./nest-cli.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/nest-cli.json-default.md",
+        "realFilePath": "nest-cli.json",
+        "realPath": "./nest-cli.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/nest-cli.json-default.md"
+      }
+    },
+    "package.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "package.json",
+        "realFilePath": "package.json",
+        "realPath": "./package.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/package.json-default.md",
+        "realFilePath": "package.json",
+        "realPath": "./package.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/package.json-default.md"
+      }
+    },
+    "prettier.config.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "prettier.config.js",
+        "realFilePath": "prettier.config.js",
+        "realPath": "./prettier.config.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/prettier.config.js-default.md",
+        "realFilePath": "prettier.config.js",
+        "realPath": "./prettier.config.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/prettier.config.js-default.md"
+      }
+    },
+    "src/index.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./src/index.ts",
+        "realFilePath": "src/index.ts",
+        "realPath": "./index.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/src/index.ts-default.md",
+        "realFilePath": "src/index.ts",
+        "realPath": "./src/index.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/src/index.ts-default.md"
+      }
+    },
+    "src/main.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./src/main.ts",
+        "realFilePath": "src/main.ts",
+        "realPath": "./main.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/src/main.ts-default.md",
+        "realFilePath": "src/main.ts",
+        "realPath": "./src/main.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/src/main.ts-default.md"
+      }
+    },
+    "src/my-module.module.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./src/my-module.module.ts",
+        "realFilePath": "src/my-module.module.ts",
+        "realPath": "./my-module.module.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/src/my-module.module.ts-default.md",
+        "realFilePath": "src/my-module.module.ts",
+        "realPath": "./src/my-module.module.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/src/my-module.module.ts-default.md"
+      }
+    },
+    "src/my-service.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./src/my-service.ts",
+        "realFilePath": "src/my-service.ts",
+        "realPath": "./my-service.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/src/my-service.ts-default.md",
+        "realFilePath": "src/my-service.ts",
+        "realPath": "./src/my-service.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/src/my-service.ts-default.md"
+      }
+    },
+    "src/test/jest-e2e.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./src/test/jest-e2e.json",
+        "realFilePath": "src/test/jest-e2e.json",
+        "realPath": "./jest-e2e.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/src/test/jest-e2e.json-default.md",
+        "realFilePath": "src/test/jest-e2e.json",
+        "realPath": "./src/test/jest-e2e.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/src/test/jest-e2e.json-default.md"
+      }
+    },
+    "todo.md": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": false,
+        "path": "todo.md",
+        "realFilePath": "todo.md",
+        "realPath": "./todo.md",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/todo.md-default.md",
+        "realFilePath": "todo.md",
+        "realPath": "./todo.md",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/todo.md-default.md"
+      }
+    },
+    "tools/addDependency.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/addDependency.js",
+        "realFilePath": "tools/addDependency.js",
+        "realPath": "./addDependency.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/addDependency.js-default.md",
+        "realFilePath": "tools/addDependency.js",
+        "realPath": "./tools/addDependency.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/addDependency.js-default.md"
+      }
+    },
+    "tools/addModuleType.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/addModuleType.js",
+        "realFilePath": "tools/addModuleType.js",
+        "realPath": "./addModuleType.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/addModuleType.js-default.md",
+        "realFilePath": "tools/addModuleType.js",
+        "realPath": "./tools/addModuleType.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/addModuleType.js-default.md"
+      }
+    },
+    "tools/customize/customize.config.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/customize/customize.config.ts",
+        "realFilePath": "tools/customize/customize.config.ts",
+        "realPath": "./customize.config.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/customize/customize.config.ts-default.md",
+        "realFilePath": "tools/customize/customize.config.ts",
+        "realPath": "./tools/customize/customize.config.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/customize/customize.config.ts-default.md"
+      }
+    },
+    "tools/customize/customize.example.config.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/customize/customize.example.config.ts",
+        "realFilePath": "tools/customize/customize.example.config.ts",
+        "realPath": "./customize.example.config.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/customize/customize.example.config.ts-default.md",
+        "realFilePath": "tools/customize/customize.example.config.ts",
+        "realPath": "./tools/customize/customize.example.config.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/customize/customize.example.config.ts-default.md"
+      }
+    },
+    "tools/customize/customize.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/customize/customize.ts",
+        "realFilePath": "tools/customize/customize.ts",
+        "realPath": "./customize.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/customize/customize.ts-default.md",
+        "realFilePath": "tools/customize/customize.ts",
+        "realPath": "./tools/customize/customize.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/customize/customize.ts-default.md"
+      }
+    },
+    "tools/customize/type.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/customize/type.ts",
+        "realFilePath": "tools/customize/type.ts",
+        "realPath": "./type.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/customize/type.ts-default.md",
+        "realFilePath": "tools/customize/type.ts",
+        "realPath": "./tools/customize/type.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/customize/type.ts-default.md"
+      }
+    },
+    "tools/ngrok-auth.js": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/ngrok-auth.js",
+        "realFilePath": "tools/ngrok-auth.js",
+        "realPath": "./ngrok-auth.js",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/ngrok-auth.js-default.md",
+        "realFilePath": "tools/ngrok-auth.js",
+        "realPath": "./tools/ngrok-auth.js",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/ngrok-auth.js-default.md"
+      }
+    },
+    "tools/snapshotUtils.ts": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./tools/snapshotUtils.ts",
+        "realFilePath": "tools/snapshotUtils.ts",
+        "realPath": "./snapshotUtils.ts",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tools/snapshotUtils.ts-default.md",
+        "realFilePath": "tools/snapshotUtils.ts",
+        "realPath": "./tools/snapshotUtils.ts",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tools/snapshotUtils.ts-default.md"
+      }
+    },
+    "tsconfig.build.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "tsconfig.build.json",
+        "realFilePath": "tsconfig.build.json",
+        "realPath": "./tsconfig.build.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tsconfig.build.json-default.md",
+        "realFilePath": "tsconfig.build.json",
+        "realPath": "./tsconfig.build.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tsconfig.build.json-default.md"
+      }
+    },
+    "tsconfig.json": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "tsconfig.json",
+        "realFilePath": "tsconfig.json",
+        "realPath": "./tsconfig.json",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/tsconfig.json-default.md",
+        "realFilePath": "tsconfig.json",
+        "realPath": "./tsconfig.json",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/tsconfig.json-default.md"
+      }
+    },
+    "yarn.lock": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "yarn.lock",
+        "realFilePath": "yarn.lock",
+        "realPath": "./yarn.lock",
+        "templateVersion": "1.0.3"
+      },
+      "defaultFile": {
+        "SUMKeySuffix": "defaultFile",
+        "isCreated": true,
+        "path": "./.sum/templateCatalog/yarn.lock-default.md",
+        "realFilePath": "yarn.lock",
+        "realPath": "./yarn.lock",
+        "templateVersion": "1.0.3",
+        "SUMSuffixFileName": "templateCatalog/yarn.lock-default.md"
+      }
+    },
+    ".github/assets/couplingGraph-node.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/assets/couplingGraph-node.png",
+        "realFilePath": ".github/assets/couplingGraph-node.png",
+        "realPath": "./couplingGraph-node.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    ".github/assets/githubActions.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/assets/githubActions.png",
+        "realFilePath": ".github/assets/githubActions.png",
+        "realPath": "./githubActions.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    ".github/assets/heroImageReposytory-nest.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/assets/heroImageReposytory-nest.png",
+        "realFilePath": ".github/assets/heroImageReposytory-nest.png",
+        "realPath": "./heroImageReposytory-nest.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    ".github/assets/ngrok.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./.github/assets/ngrok.png",
+        "realFilePath": ".github/assets/ngrok.png",
+        "realPath": "./ngrok.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    "docs/actions-secrets.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/actions-secrets.png",
+        "realFilePath": "docs/actions-secrets.png",
+        "realPath": "./actions-secrets.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    "docs/cz-problem.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/cz-problem.png",
+        "realFilePath": "docs/cz-problem.png",
+        "realPath": "./cz-problem.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    "docs/gh.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/gh.png",
+        "realFilePath": "docs/gh.png",
+        "realPath": "./gh.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    },
+    "docs/gh_token_permission.png": {
+      "_": {
+        "SUMKeySuffix": "_",
+        "isCreated": true,
+        "path": "./docs/gh_token_permission.png",
+        "realFilePath": "docs/gh_token_permission.png",
+        "realPath": "./gh_token_permission.png",
+        "templateVersion": "1.0.3",
+        "isRedOnly": true
+      }
+    }
+  }
+}
