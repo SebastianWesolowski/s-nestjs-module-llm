@@ -76,6 +76,11 @@ jobs:
           echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN != '' }}"
           echo "NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}"
 
+          echo "Env status:"
+          echo "GH_TOKEN: ${{ env.GH_TOKEN != '' }}"
+          echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN != '' }}"
+          echo "NPM_TOKEN: ${{ env.NPM_TOKEN != '' }}"
+
           # Informacja o logice release'u
           echo "reason=Release controlled by .releaserc.js configuration" >> $GITHUB_OUTPUT
 
@@ -137,11 +142,22 @@ jobs:
             echo "| REASON | ${{ steps.check_inputs.outputs.reason }} |"
           } >> $GITHUB_STEP_SUMMARY
 
+      - name: 🔍 Check tokens
+        id: check_tokens
+        run: |
+          if [[ -n "$GH_TOKEN" ]]; then
+            echo "Using GH_TOKEN"
+            echo "token=$GH_TOKEN" >> $GITHUB_OUTPUT
+          else
+            echo "Using GITHUB_TOKEN"
+            echo "token=$GITHUB_TOKEN" >> $GITHUB_OUTPUT
+          fi
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ steps.check_tokens.outputs.token }}
           ref: ${{ inputs.release_branch }}
 
       - name: ⚡ Cache dependencies
