@@ -1,5 +1,34 @@
-## 1.0.0-dev.1 (April 08, 2025)
+## [1.0.0-dev.5](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.4...v1.0.0-dev.5) (April 08, 2025)
 
+
+### Other tasks
+
+- 🐛 remove private property in package.json ([bfce9cd](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/bfce9cde06bdae8815db39dfe6cc0ff104e5715e))
+
+## [1.0.0-dev.4](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.3...v1.0.0-dev.4) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 nPM_PUBLISH in release rc ([373d495](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/373d4955cea4f5572ad5b0343cfb42261065a448))
+
+## [1.0.0-dev.3](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.2...v1.0.0-dev.3) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 gH actions script release ([5ecab7a](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/5ecab7a2435a76e3573b8419e3ebbabd818f025b))
+- 🐛 github actions token acces ([0f6b41d](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/0f6b41da9a38f92595d8f746a85253cb3701b187))
+
+## [1.0.0-dev.2](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.1...v1.0.0-dev.2) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 automate release ([b2f936c](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/b2f936c0cf4bb9e7ad8786729abbae2194635609))
+- Merge pull request #1 from SebastianWesolowski/dev ([1d3c19e](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/1d3c19e6115b7b603ce89bcd0519e099c8765d68))
+
+## 1.0.0-dev.1 (April 08, 2025)
 
 ### [SC-158](https://linear.app/wesolowskidev/issue/SC-158)
 
@@ -11,7 +40,6 @@
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] init code fom s-llm ([a640d85](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/a640d858faf0a73c92840e3d5dfeda709266f383))
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] customize SUM ([7e074f1](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/7e074f14f82d67a179fa4e78878a3afbf224b28b))
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] init SUM ([4e84a58](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/4e84a5834f9880db0a69f0d2032ab1d7b166cd77))
-
 
 ### Other tasks
 

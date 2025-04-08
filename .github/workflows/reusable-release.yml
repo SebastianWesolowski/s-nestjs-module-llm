@@ -153,6 +153,14 @@ jobs:
             echo "token=$GITHUB_TOKEN" >> $GITHUB_OUTPUT
           fi
 
+          if [[ -n "$NPM_TOKEN" ]]; then
+            echo "NPM_TOKEN dostępny"
+            echo "npm_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "NPM_TOKEN niedostępny"
+            echo "npm_token=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: 📝 Checkout
         uses: actions/checkout@v4
         with:
