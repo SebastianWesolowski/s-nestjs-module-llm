@@ -205,6 +205,6 @@ module.exports = {
         prepareCmd: 'echo "Preparing release" && yarn build:prod',
       },
     ],
-    ['@semantic-release/npm', { npmPublish: false }],
+    ['@semantic-release/npm', { npmPublish: process.env.NPM_PUBLISH || true }],
   ],
 };
