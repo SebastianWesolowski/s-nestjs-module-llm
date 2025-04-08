@@ -1,3 +1,10 @@
+## [1.0.0-dev.4](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.3...v1.0.0-dev.4) (April 08, 2025)
+
+
+### Other tasks
+
+- 🐛 nPM_PUBLISH in release rc ([373d495](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/373d4955cea4f5572ad5b0343cfb42261065a448))
+
 ## [1.0.0-dev.3](https://github.com/SebastianWesolowski/s-nestjs-module-llm/compare/v1.0.0-dev.2...v1.0.0-dev.3) (April 08, 2025)
 
 
