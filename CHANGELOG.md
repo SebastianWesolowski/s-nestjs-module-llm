@@ -1,6 +1,5 @@
 ## 1.0.0-dev.1 (April 08, 2025)
 
-
 ### [SC-158](https://linear.app/wesolowskidev/issue/SC-158)
 
 - 🐛 [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] create file log if doest exist ([56d8556](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/56d85568912622d783462bb348a56cf1c1fcf8da))
@@ -11,7 +10,6 @@
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] init code fom s-llm ([a640d85](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/a640d858faf0a73c92840e3d5dfeda709266f383))
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] customize SUM ([7e074f1](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/7e074f14f82d67a179fa4e78878a3afbf224b28b))
 - ✨ [[SC-158](https://linear.app/wesolowskidev/issue/SC-158)] init SUM ([4e84a58](https://github.com/SebastianWesolowski/s-nestjs-module-llm/commit/4e84a5834f9880db0a69f0d2032ab1d7b166cd77))
-
 
 ### Other tasks
 

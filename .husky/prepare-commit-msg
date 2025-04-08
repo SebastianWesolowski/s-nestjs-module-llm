@@ -5,7 +5,7 @@ commit_source="$2"
 
 # Extract emoji from commit message
 get_emoji() {
-    [[ $1 =~ [✨🐛📚️💄♻️⚡🚨📦🎡🔧⏪] ]] && echo "${BASH_REMATCH[0]}"
+    [[ $1 =~ [\✨\🐛\📚️\💄\♻️\⚡\🚨\📦\🎡\🔧\⏪] ]] && echo "${BASH_REMATCH[0]}"
 }
 
 # Extract issue number from commit message
